@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a3d2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Spasser Vest">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='38' fill='%230a3d2e'/%3E%3Ctext x='90' y='128' font-size='110' text-anchor='middle' fill='%23e8e2d2' font-family='Georgia,serif'%3E%E2%99%A0%3C/text%3E%3C/svg%3E">
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Spasser%20Vest%22%2C%22short_name%22%3A%22Spasser%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230a3d2e%22%2C%22theme_color%22%3A%22%230a3d2e%22%2C%22start_url%22%3A%22.%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D%2527http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%2527%2520viewBox%3D%25270%25200%2520180%2520180%2527%253E%253Crect%2520width%3D%2527180%2527%2520height%3D%2527180%2527%2520rx%3D%252738%2527%2520fill%3D%2527%25230a3d2e%2527%2F%253E%253Ctext%2520x%3D%252790%2527%2520y%3D%2527128%2527%2520font-size%3D%2527110%2527%2520text-anchor%3D%2527middle%2527%2520fill%3D%2527%2523e8e2d2%2527%2520font-family%3D%2527Georgia%2Cserif%2527%253E%25E2%2599%25A0%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22180x180%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+<title>Spasser Vest</title>
+<style>
+  :root{
+    --felt:#0a3d2e; --felt-2:#0d4a37; --felt-line:#10573f;
+    --gold:#e8c468; --gold-dim:#b89640;
+    --cream:#f3ead6; --ink:#0a2018;
+    --red:#d14b4b; --black:#1a1a1a;
+    --miss:#7a3434; --hit:#2e7d56;
+    --shadow:rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Georgia","Times New Roman",serif;
+    background:
+      radial-gradient(ellipse at 50% 0%, var(--felt-2), var(--felt) 70%);
+    color:var(--cream);
+    min-height:100vh;
+    min-height:100dvh;
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  .wrap{max-width:560px;margin:0 auto;padding:14px 14px 80px;}
+
+  header{text-align:center;padding:10px 0 6px;}
+  header h1{
+    font-size:30px;margin:0;letter-spacing:2px;
+    color:var(--gold);
+    text-shadow:0 2px 4px var(--shadow);
+    font-variant:small-caps;
+  }
+  header .sub{font-size:12px;color:var(--gold-dim);letter-spacing:3px;text-transform:uppercase;margin-top:2px;}
+
+  .panel{
+    background:var(--felt-2);
+    border:1px solid var(--felt-line);
+    border-radius:14px;
+    padding:16px;
+    margin:14px 0;
+    box-shadow:0 6px 18px var(--shadow);
+  }
+  label{display:block;font-size:13px;letter-spacing:1px;color:var(--gold-dim);text-transform:uppercase;margin-bottom:6px;}
+
+  input[type=text],input[type=number]{
+    width:100%;font-family:inherit;font-size:17px;
+    padding:11px 12px;border-radius:9px;border:1px solid var(--felt-line);
+    background:#093427;color:var(--cream);
+  }
+  input:focus{outline:2px solid var(--gold-dim);}
+
+  .player-add{display:flex;gap:8px;}
+  .player-add input{flex:1;}
+
+  .btn{
+    font-family:inherit;font-size:16px;letter-spacing:.5px;
+    border:none;border-radius:10px;padding:12px 16px;cursor:pointer;
+    background:var(--gold);color:var(--ink);font-weight:bold;
+    box-shadow:0 3px 0 var(--gold-dim);
+    transition:transform .05s;
+  }
+  .btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--gold-dim);}
+  .btn.secondary{background:transparent;color:var(--gold);border:1px solid var(--gold-dim);box-shadow:none;}
+  .btn.ghost{background:transparent;color:var(--cream);border:1px solid var(--felt-line);box-shadow:none;font-size:14px;padding:9px 12px;}
+  .btn.block{width:100%;}
+  .btn.big{font-size:19px;padding:15px;}
+
+  ul.list{list-style:none;margin:10px 0 0;padding:0;}
+  ul.list li{
+    display:flex;align-items:center;gap:10px;
+    padding:9px 0;border-bottom:1px solid var(--felt-line);
+  }
+  ul.list li:last-child{border-bottom:none;}
+  ul.list .name{flex:1;font-size:18px;}
+  .pill{
+    background:#093427;border:1px solid var(--felt-line);
+    color:var(--gold-dim);width:30px;height:30px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;
+  }
+
+  /* round header */
+  .round-bar{
+    display:flex;justify-content:space-between;align-items:center;
+    background:var(--felt-2);border:1px solid var(--felt-line);
+    border-radius:14px;padding:14px 16px;margin:14px 0;
+    box-shadow:0 6px 18px var(--shadow);
+  }
+  .round-bar .runde{font-size:13px;letter-spacing:2px;color:var(--gold-dim);text-transform:uppercase;}
+  .round-bar .kort{font-size:34px;color:var(--gold);font-weight:bold;line-height:1;}
+  .round-bar .kort small{font-size:13px;color:var(--gold-dim);font-weight:normal;letter-spacing:1px;}
+  .trumf{text-align:right;}
+  .trumf .suit{font-size:40px;line-height:1;}
+  .trumf .suit.red{color:var(--red);}
+  .trumf .suit.black{color:#e8e2d2;}
+  .trumf .suit.sans{font-size:24px;color:var(--gold);font-variant:small-caps;letter-spacing:1px;}
+  .trumf .lbl{font-size:11px;letter-spacing:2px;color:var(--gold-dim);text-transform:uppercase;}
+
+  /* bid/take rows */
+  .prow{
+    display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:10px;
+    padding:12px 0;border-bottom:1px solid var(--felt-line);
+  }
+  .prow:last-child{border-bottom:none;}
+  .prow .pname{font-size:18px;}
+  .prow .pname small{display:block;font-size:12px;color:var(--gold-dim);letter-spacing:.5px;}
+  .stepper{display:flex;align-items:center;gap:8px;}
+  .stepper button{
+    width:38px;height:38px;border-radius:9px;border:1px solid var(--felt-line);
+    background:#093427;color:var(--gold);font-size:22px;cursor:pointer;font-family:inherit;
+  }
+  .stepper .val{min-width:26px;text-align:center;font-size:22px;color:var(--cream);}
+  .colhead{display:grid;grid-template-columns:1fr auto auto;gap:10px;font-size:11px;letter-spacing:1px;color:var(--gold-dim);text-transform:uppercase;padding-bottom:4px;}
+  .colhead span:nth-child(2),.colhead span:nth-child(3){text-align:center;width:118px;}
+
+  .warn{
+    margin-top:12px;padding:10px 12px;border-radius:9px;
+    background:rgba(232,196,104,.12);border:1px solid var(--gold-dim);
+    font-size:14px;color:var(--gold);
+  }
+  .warn.bad{background:rgba(209,75,75,.15);border-color:var(--red);color:#f0b0b0;}
+
+  /* scoreboard */
+  table{width:100%;border-collapse:collapse;font-size:15px;}
+  th,td{padding:9px 6px;text-align:center;border-bottom:1px solid var(--felt-line);}
+  th{font-size:11px;letter-spacing:1px;color:var(--gold-dim);text-transform:uppercase;font-weight:normal;}
+  td.name{text-align:left;font-size:16px;}
+  tr.leader td.total{color:var(--gold);font-weight:bold;}
+  td.total{font-weight:bold;font-size:17px;}
+  .cell-hit{color:var(--hit);}
+  .cell-miss{color:#c98a8a;}
+  .crown{color:var(--gold);}
+
+  .footer-actions{display:flex;gap:10px;margin-top:14px;}
+  .footer-actions .btn{flex:1;}
+
+  .hidden{display:none;}
+  .tag{font-size:12px;color:var(--gold-dim);text-align:center;margin-top:18px;letter-spacing:1px;}
+
+  /* install bar */
+  .install-bar{
+    position:fixed;left:0;right:0;bottom:0;
+    padding:12px 14px calc(12px + env(safe-area-inset-bottom));
+    background:rgba(7,40,30,.96);
+    border-top:1px solid var(--gold-dim);
+    box-shadow:0 -4px 16px var(--shadow);
+    display:flex;align-items:center;gap:12px;
+    z-index:50;
+  }
+  .install-bar .txt{flex:1;font-size:14px;color:var(--cream);line-height:1.4;}
+  .install-bar .txt b{color:var(--gold);}
+  .install-bar .x{
+    background:none;border:none;color:var(--gold-dim);font-size:22px;cursor:pointer;padding:4px;line-height:1;
+  }
+  .ios-help{
+    margin:10px 0 0;font-size:14px;color:var(--cream);line-height:1.6;
+    background:rgba(232,196,104,.1);border:1px solid var(--gold-dim);border-radius:9px;padding:12px;
+  }
+  .ios-help .share{color:var(--gold);font-weight:bold;}
+
+  .win-banner{
+    text-align:center;padding:20px;border-radius:14px;
+    background:linear-gradient(180deg, rgba(232,196,104,.18), transparent);
+    border:1px solid var(--gold-dim);margin:14px 0;
+  }
+  .win-banner .who{font-size:28px;color:var(--gold);font-variant:small-caps;}
+  .win-banner .pts{font-size:15px;color:var(--cream);margin-top:4px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Spasser Vest</h1>
+    <div class="sub">Meld dine stik</div>
+  </header>
+
+  <!-- SETUP -->
+  <section id="setup">
+    <div class="panel">
+      <label>Spillere (i den rækkefølge de melder)</label>
+      <div class="player-add">
+        <input type="text" id="nameInput" placeholder="Navn" maxlength="14" autocomplete="off">
+        <button class="btn" id="addBtn">Tilføj</button>
+      </div>
+      <ul class="list" id="playerList"></ul>
+    </div>
+
+    <div class="panel">
+      <label>Antal kort i første runde</label>
+      <input type="number" id="startCards" value="10" min="1" max="13">
+      <p style="font-size:13px;color:var(--gold-dim);margin:10px 0 0;line-height:1.5;">
+        Spillet går fra dette antal ned til 1 og op igen. Trumf skifter hver runde:
+        spar ♠ → hjerter ♥ → ruder ♦ → klør ♣ → sans.
+      </p>
+    </div>
+
+    <button class="btn block big" id="startBtn">Start spil</button>
+  </section>
+
+  <!-- GAME -->
+  <section id="game" class="hidden">
+    <div class="round-bar">
+      <div>
+        <div class="runde" id="roundLabel">Runde 1</div>
+        <div class="kort"><span id="cardCount">10</span> <small>kort</small></div>
+      </div>
+      <div class="trumf">
+        <div class="lbl">Trumf</div>
+        <div class="suit" id="trumfSuit">♠</div>
+      </div>
+    </div>
+
+    <!-- BIDDING -->
+    <div class="panel" id="bidPanel">
+      <label>Meld antal stik</label>
+      <div id="bidRows"></div>
+      <div class="warn" id="bidWarn"></div>
+      <button class="btn block big" id="bidDoneBtn" style="margin-top:14px;">Videre til resultat</button>
+    </div>
+
+    <!-- TAKING -->
+    <div class="panel hidden" id="takePanel">
+      <label>Hvor mange stik fik hver?</label>
+      <div class="colhead"><span>Spiller</span><span>Meldt</span><span>Fik</span></div>
+      <div id="takeRows"></div>
+      <div class="warn" id="takeWarn"></div>
+      <div class="footer-actions">
+        <button class="btn secondary" id="backToBid">Tilbage</button>
+        <button class="btn" id="scoreBtn">Beregn point</button>
+      </div>
+    </div>
+
+    <!-- SCOREBOARD -->
+    <div class="panel">
+      <label>Stilling</label>
+      <div style="overflow-x:auto;">
+        <table id="board"></table>
+      </div>
+    </div>
+
+    <div id="winBox"></div>
+
+    <div class="footer-actions">
+      <button class="btn ghost" id="undoBtn">Fortryd sidste runde</button>
+      <button class="btn ghost" id="resetBtn">Nyt spil</button>
+    </div>
+  </section>
+
+  <div class="tag">Fysiske kort · appen holder kun score</div>
+</div>
+
+<div class="install-bar hidden" id="installBar">
+  <div class="txt" id="installTxt"></div>
+  <button class="btn" id="installBtn" style="display:none;">Installér</button>
+  <button class="x" id="installClose" aria-label="Luk">✕</button>
+</div>
+
+<script>
+const SUITS = [
+  {sym:'♠', name:'Spar',    cls:'black'},
+  {sym:'♥', name:'Hjerter', cls:'red'},
+  {sym:'♦', name:'Ruder',   cls:'red'},
+  {sym:'♣', name:'Klør',    cls:'black'},
+  {sym:'SANS', name:'Sans', cls:'sans'},
+];
+
+let state = load() || freshState();
+
+function freshState(){
+  return {
+    players:[],        // [{name}]
+    startCards:10,
+    started:false,
+    rounds:[],         // history: [{cards, suitIdx, bids:[], takes:[], scores:[]}]
+    roundIdx:0,        // current round index
+    cardSeq:[],        // sequence of card counts
+    phase:'bid',       // 'bid' | 'take'
+    curBids:[],
+    curTakes:[],
+  };
+}
+
+function save(){ try{localStorage.setItem('spasserVest', JSON.stringify(state));}catch(e){} }
+function load(){ try{return JSON.parse(localStorage.getItem('spasserVest'));}catch(e){return null;} }
+
+function buildSequence(start){
+  const seq=[];
+  for(let c=start;c>=1;c--) seq.push(c);
+  for(let c=2;c<=start;c++) seq.push(c);
+  return seq;
+}
+
+/* ---------- SETUP ---------- */
+const nameInput=document.getElementById('nameInput');
+const playerList=document.getElementById('playerList');
+
+function renderPlayers(){
+  playerList.innerHTML='';
+  state.players.forEach((p,i)=>{
+    const li=document.createElement('li');
+    li.innerHTML=`<span class="pill" data-up="${i}">↑</span>
+      <span class="name">${escapeHtml(p.name)}</span>
+      <span class="pill" data-del="${i}">✕</span>`;
+    playerList.appendChild(li);
+  });
+}
+function escapeHtml(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+document.getElementById('addBtn').onclick=addPlayer;
+nameInput.addEventListener('keydown',e=>{if(e.key==='Enter')addPlayer();});
+function addPlayer(){
+  const n=nameInput.value.trim();
+  if(!n)return;
+  state.players.push({name:n});
+  nameInput.value='';nameInput.focus();
+  renderPlayers();save();
+}
+playerList.addEventListener('click',e=>{
+  const del=e.target.dataset.del, up=e.target.dataset.up;
+  if(del!==undefined){state.players.splice(+del,1);renderPlayers();save();}
+  if(up!==undefined && +up>0){
+    const i=+up;[state.players[i-1],state.players[i]]=[state.players[i],state.players[i-1]];
+    renderPlayers();save();
+  }
+});
+
+document.getElementById('startBtn').onclick=()=>{
+  if(state.players.length<2){alert('Tilføj mindst 2 spillere.');return;}
+  state.startCards=Math.max(1,Math.min(13,+document.getElementById('startCards').value||10));
+  state.cardSeq=buildSequence(state.startCards);
+  state.started=true;state.roundIdx=0;state.rounds=[];
+  startRound();
+};
+
+/* ---------- ROUND ---------- */
+function curCards(){return state.cardSeq[state.roundIdx];}
+function curSuit(){return SUITS[state.roundIdx % SUITS.length];}
+
+function startRound(){
+  state.phase='bid';
+  state.curBids=state.players.map(()=>0);
+  state.curTakes=state.players.map(()=>0);
+  save();
+  showGame();
+}
+
+function showGame(){
+  document.getElementById('setup').classList.add('hidden');
+  document.getElementById('game').classList.remove('hidden');
+  renderRoundBar();
+  renderPhase();
+  renderBoard();
+}
+
+function renderRoundBar(){
+  document.getElementById('roundLabel').textContent=`Runde ${state.roundIdx+1} af ${state.cardSeq.length}`;
+  document.getElementById('cardCount').textContent=curCards();
+  const s=curSuit();
+  const el=document.getElementById('trumfSuit');
+  el.textContent=s.sym;
+  el.className='suit '+s.cls;
+}
+
+function renderPhase(){
+  document.getElementById('bidPanel').classList.toggle('hidden',state.phase!=='bid');
+  document.getElementById('takePanel').classList.toggle('hidden',state.phase!=='take');
+  if(state.phase==='bid')renderBids(); else renderTakes();
+}
+
+/* stepper builder */
+function stepper(val,max,onChange){
+  const div=document.createElement('div');div.className='stepper';
+  const minus=document.createElement('button');minus.textContent='−';
+  const span=document.createElement('span');span.className='val';span.textContent=val;
+  const plus=document.createElement('button');plus.textContent='+';
+  minus.onclick=()=>{if(val>0){val--;span.textContent=val;onChange(val);}};
+  plus.onclick=()=>{if(val<max){val++;span.textContent=val;onChange(val);}};
+  div.append(minus,span,plus);
+  return div;
+}
+
+function renderBids(){
+  const box=document.getElementById('bidRows');box.innerHTML='';
+  const cards=curCards();
+  state.players.forEach((p,i)=>{
+    const row=document.createElement('div');row.className='prow';
+    const isLast=i===state.players.length-1;
+    const nm=document.createElement('div');nm.className='pname';
+    nm.innerHTML=escapeHtml(p.name)+(isLast?'<small>kortgiver — må ikke få summen til at gå op</small>':'');
+    row.appendChild(nm);
+    row.appendChild(document.createElement('span'));
+    row.appendChild(stepper(state.curBids[i],cards,v=>{state.curBids[i]=v;save();checkBid();}));
+    box.appendChild(row);
+  });
+  checkBid();
+}
+
+function checkBid(){
+  const cards=curCards();
+  const sum=state.curBids.reduce((a,b)=>a+b,0);
+  const warn=document.getElementById('bidWarn');
+  const forbidden=cards - state.curBids.slice(0,-1).reduce((a,b)=>a+b,0);
+  if(sum===cards){
+    warn.className='warn bad';
+    warn.textContent=`Summen er ${sum} = antal kort (${cards}). Det er ikke tilladt — kortgiver skal melde noget andet end ${forbidden}.`;
+    document.getElementById('bidDoneBtn').disabled=true;
+    document.getElementById('bidDoneBtn').style.opacity=.5;
+  }else{
+    warn.className='warn';
+    warn.textContent=`Meldt i alt: ${sum} af ${cards} stik. Forskel: ${sum-cards>0?'+':''}${sum-cards}.`;
+    document.getElementById('bidDoneBtn').disabled=false;
+    document.getElementById('bidDoneBtn').style.opacity=1;
+  }
+}
+
+document.getElementById('bidDoneBtn').onclick=()=>{
+  state.phase='take';
+  state.curTakes=state.curBids.slice(); // default guess
+  save();renderPhase();
+};
+
+function renderTakes(){
+  const box=document.getElementById('takeRows');box.innerHTML='';
+  const cards=curCards();
+  state.players.forEach((p,i)=>{
+    const row=document.createElement('div');row.className='prow';
+    const nm=document.createElement('div');nm.className='pname';nm.textContent=p.name;
+    const bid=document.createElement('span');bid.style.textAlign='center';bid.style.fontSize='20px';
+    bid.style.color='var(--gold-dim)';bid.textContent=state.curBids[i];
+    row.appendChild(nm);row.appendChild(bid);
+    row.appendChild(stepper(state.curTakes[i],cards,v=>{state.curTakes[i]=v;save();checkTake();}));
+    box.appendChild(row);
+  });
+  checkTake();
+}
+
+function checkTake(){
+  const cards=curCards();
+  const sum=state.curTakes.reduce((a,b)=>a+b,0);
+  const warn=document.getElementById('takeWarn');
+  if(sum!==cards){
+    warn.className='warn bad';
+    warn.textContent=`Stik i alt: ${sum}. Skal være præcis ${cards} (alle stik fordeles). Ret tallene.`;
+    document.getElementById('scoreBtn').disabled=true;
+    document.getElementById('scoreBtn').style.opacity=.5;
+  }else{
+    warn.className='warn';
+    warn.textContent=`Alle ${cards} stik fordelt. ✓`;
+    document.getElementById('scoreBtn').disabled=false;
+    document.getElementById('scoreBtn').style.opacity=1;
+  }
+}
+
+document.getElementById('backToBid').onclick=()=>{state.phase='bid';save();renderPhase();};
+
+document.getElementById('scoreBtn').onclick=()=>{
+  const cards=curCards();
+  const scores=state.players.map((p,i)=>{
+    const hit=state.curBids[i]===state.curTakes[i];
+    return hit ? 10+state.curBids[i] : 0;
+  });
+  state.rounds.push({
+    cards, suitIdx:state.roundIdx%SUITS.length,
+    bids:state.curBids.slice(), takes:state.curTakes.slice(), scores
+  });
+  state.roundIdx++;
+  if(state.roundIdx>=state.cardSeq.length){
+    finishGame();
+  }else{
+    startRound();
+  }
+};
+
+/* ---------- SCOREBOARD ---------- */
+function totals(){
+  return state.players.map((p,i)=>state.rounds.reduce((a,r)=>a+r.scores[i],0));
+}
+
+function renderBoard(){
+  const tot=totals();
+  const maxTot=Math.max(...tot,0);
+  let html='<tr><th class="name">Spiller</th>';
+  // show last few rounds
+  const showFrom=Math.max(0,state.rounds.length-6);
+  for(let r=showFrom;r<state.rounds.length;r++){
+    html+=`<th>${state.rounds[r].cards}${SUITS[state.rounds[r].suitIdx].sym==='SANS'?'·S':SUITS[state.rounds[r].suitIdx].sym}</th>`;
+  }
+  html+='<th>I alt</th></tr>';
+  state.players.forEach((p,i)=>{
+    const leader = tot[i]===maxTot && maxTot>0;
+    html+=`<tr class="${leader?'leader':''}"><td class="name">${leader?'<span class="crown">♛ </span>':''}${escapeHtml(p.name)}</td>`;
+    for(let r=showFrom;r<state.rounds.length;r++){
+      const sc=state.rounds[r].scores[i];
+      const hit=sc>0;
+      html+=`<td class="${hit?'cell-hit':'cell-miss'}">${sc}</td>`;
+    }
+    html+=`<td class="total">${tot[i]}</td></tr>`;
+  });
+  document.getElementById('board').innerHTML=html;
+}
+
+function finishGame(){
+  document.getElementById('bidPanel').classList.add('hidden');
+  document.getElementById('takePanel').classList.add('hidden');
+  renderBoard();
+  const tot=totals();
+  const max=Math.max(...tot);
+  const winners=state.players.filter((p,i)=>tot[i]===max).map(p=>p.name);
+  document.getElementById('winBox').innerHTML=
+    `<div class="win-banner"><div class="who">${winners.join(' & ')} vandt!</div>
+     <div class="pts">${max} point</div></div>`;
+  // hide round bar phase
+  document.getElementById('roundLabel').textContent='Spillet er slut';
+  save();
+}
+
+document.getElementById('undoBtn').onclick=()=>{
+  if(state.rounds.length===0){
+    if(confirm('Gå tilbage til opsætning?')){state.started=false;save();location.reload();}
+    return;
+  }
+  const last=state.rounds.pop();
+  state.roundIdx=Math.max(0,state.roundIdx-1);
+  state.curBids=last.bids.slice();
+  state.curTakes=last.takes.slice();
+  state.phase='bid';
+  document.getElementById('winBox').innerHTML='';
+  save();showGame();
+};
+
+document.getElementById('resetBtn').onclick=()=>{
+  if(confirm('Slet spillet og start forfra?')){
+    state=freshState();save();location.reload();
+  }
+};
+
+/* ---------- INSTALL ---------- */
+(function(){
+  // Register service worker (offline + install support)
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',()=>{
+      navigator.serviceWorker.register('./sw.js').catch(()=>{});
+    });
+  }
+
+  const bar=document.getElementById('installBar');
+  const txt=document.getElementById('installTxt');
+  const btn=document.getElementById('installBtn');
+  const closeBtn=document.getElementById('installClose');
+
+  // Already running as installed app? Don't show.
+  const standalone = window.matchMedia('(display-mode: standalone)').matches
+    || window.navigator.standalone === true;
+  if(standalone) return;
+
+  // Dismissed before?
+  if(localStorage.getItem('installDismissed')==='1') return;
+
+  const ua = navigator.userAgent;
+  const isIOS = /iphone|ipad|ipod/i.test(ua);
+  let deferredPrompt = null;
+
+  closeBtn.onclick=()=>{
+    bar.classList.add('hidden');
+    try{localStorage.setItem('installDismissed','1');}catch(e){}
+  };
+
+  // Android/Chrome: real install prompt
+  window.addEventListener('beforeinstallprompt',e=>{
+    e.preventDefault();
+    deferredPrompt=e;
+    txt.innerHTML='Læg <b>Spasser Vest</b> på hjemmeskærmen for hurtig adgang.';
+    btn.style.display='inline-block';
+    bar.classList.remove('hidden');
+  });
+  btn.onclick=async()=>{
+    if(!deferredPrompt)return;
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt=null;
+    bar.classList.add('hidden');
+  };
+
+  // iOS: show manual instructions (no install API exists)
+  if(isIOS){
+    txt.innerHTML='Installér: tryk <span class="share" style="color:var(--gold)">Del-ikonet ⬆</span> nederst og vælg <b>“Føj til hjemmeskærm”</b>.';
+    btn.style.display='none';
+    bar.classList.remove('hidden');
+  }
+})();
+
+/* ---------- BOOT ---------- */
+function boot(){
+  renderPlayers();
+  document.getElementById('startCards').value=state.startCards;
+  if(state.started){
+    if(state.roundIdx>=state.cardSeq.length && state.cardSeq.length){
+      showGame();finishGame();
+    }else{
+      showGame();
+    }
+  }
+}
+boot();
+</script>
+</body>
+</html>
