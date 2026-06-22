@@ -6,95 +6,81 @@
 <meta name="theme-color" content="#0a3d2e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Spasser Vest">
+<meta name="apple-mobile-web-app-title" content="Kortspil">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a3d2e'/%3E%3Ctext x='32' y='47' font-size='42' text-anchor='middle' fill='%23e8e2d2' font-family='Georgia,serif'%3E%E2%99%A0%3C/text%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='38' fill='%230a3d2e'/%3E%3Ctext x='90' y='128' font-size='110' text-anchor='middle' fill='%23e8e2d2' font-family='Georgia,serif'%3E%E2%99%A0%3C/text%3E%3C/svg%3E">
-<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Spasser%20Vest%22%2C%22short_name%22%3A%22Spasser%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230a3d2e%22%2C%22theme_color%22%3A%22%230a3d2e%22%2C%22start_url%22%3A%22.%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D%2527http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%2527%2520viewBox%3D%25270%25200%2520180%2520180%2527%253E%253Crect%2520width%3D%2527180%2527%2520height%3D%2527180%2527%2520rx%3D%252738%2527%2520fill%3D%2527%25230a3d2e%2527%2F%253E%253Ctext%2520x%3D%252790%2527%2520y%3D%2527128%2527%2520font-size%3D%2527110%2527%2520text-anchor%3D%2527middle%2527%2520fill%3D%2527%2523e8e2d2%2527%2520font-family%3D%2527Georgia%2Cserif%2527%253E%25E2%2599%25A0%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22180x180%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
-<title>Spasser Vest</title>
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Kortspil%22%2C%22short_name%22%3A%22Kortspil%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230a3d2e%22%2C%22theme_color%22%3A%22%230a3d2e%22%2C%22start_url%22%3A%22.%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D%2527http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%2527%2520viewBox%3D%25270%25200%2520180%2520180%2527%253E%253Crect%2520width%3D%2527180%2527%2520height%3D%2527180%2527%2520rx%3D%252738%2527%2520fill%3D%2527%25230a3d2e%2527%2F%253E%253Ctext%2520x%3D%252790%2527%2520y%3D%2527128%2527%2520font-size%3D%2527110%2527%2520text-anchor%3D%2527middle%2527%2520fill%3D%2527%2523e8e2d2%2527%2520font-family%3D%2527Georgia%2Cserif%2527%253E%25E2%2599%25A0%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22180x180%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+<title>Kortspil</title>
 <style>
   :root{
     --felt:#0a3d2e; --felt-2:#0d4a37; --felt-line:#10573f;
     --gold:#e8c468; --gold-dim:#b89640;
     --cream:#f3ead6; --ink:#0a2018;
     --red:#d14b4b; --black:#1a1a1a;
-    --miss:#7a3434; --hit:#2e7d56;
+    --hit:#2e7d56;
     --shadow:rgba(0,0,0,.4);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;padding:0;}
   body{
     font-family:"Georgia","Times New Roman",serif;
-    background:
-      radial-gradient(ellipse at 50% 0%, var(--felt-2), var(--felt) 70%);
-    color:var(--cream);
-    min-height:100vh;
-    min-height:100dvh;
+    background:radial-gradient(ellipse at 50% 0%, var(--felt-2), var(--felt) 70%);
+    color:var(--cream);min-height:100vh;min-height:100dvh;
     padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   }
-  .wrap{max-width:560px;margin:0 auto;padding:14px 14px 80px;}
+  .wrap{max-width:560px;margin:0 auto;padding:14px 14px 90px;}
 
-  header{text-align:center;padding:10px 0 6px;}
-  header h1{
-    font-size:30px;margin:0;letter-spacing:2px;
-    color:var(--gold);
-    text-shadow:0 2px 4px var(--shadow);
-    font-variant:small-caps;
-  }
+  header{text-align:center;padding:10px 0 6px;position:relative;}
+  header h1{font-size:30px;margin:0;letter-spacing:2px;color:var(--gold);text-shadow:0 2px 4px var(--shadow);font-variant:small-caps;}
   header .sub{font-size:12px;color:var(--gold-dim);letter-spacing:3px;text-transform:uppercase;margin-top:2px;}
-
-  .panel{
-    background:var(--felt-2);
-    border:1px solid var(--felt-line);
-    border-radius:14px;
-    padding:16px;
-    margin:14px 0;
-    box-shadow:0 6px 18px var(--shadow);
+  .home-btn{
+    position:absolute;left:0;top:50%;transform:translateY(-50%);
+    background:transparent;border:1px solid var(--felt-line);color:var(--gold);
+    border-radius:9px;padding:7px 11px;font-family:inherit;font-size:14px;cursor:pointer;
   }
+
+  .panel{background:var(--felt-2);border:1px solid var(--felt-line);border-radius:14px;padding:16px;margin:14px 0;box-shadow:0 6px 18px var(--shadow);}
   label{display:block;font-size:13px;letter-spacing:1px;color:var(--gold-dim);text-transform:uppercase;margin-bottom:6px;}
-
-  input[type=text],input[type=number]{
-    width:100%;font-family:inherit;font-size:17px;
-    padding:11px 12px;border-radius:9px;border:1px solid var(--felt-line);
-    background:#093427;color:var(--cream);
-  }
+  input[type=text],input[type=number]{width:100%;font-family:inherit;font-size:17px;padding:11px 12px;border-radius:9px;border:1px solid var(--felt-line);background:#093427;color:var(--cream);}
   input:focus{outline:2px solid var(--gold-dim);}
-
   .player-add{display:flex;gap:8px;}
   .player-add input{flex:1;}
 
-  .btn{
-    font-family:inherit;font-size:16px;letter-spacing:.5px;
-    border:none;border-radius:10px;padding:12px 16px;cursor:pointer;
-    background:var(--gold);color:var(--ink);font-weight:bold;
-    box-shadow:0 3px 0 var(--gold-dim);
-    transition:transform .05s;
-  }
+  .btn{font-family:inherit;font-size:16px;letter-spacing:.5px;border:none;border-radius:10px;padding:12px 16px;cursor:pointer;background:var(--gold);color:var(--ink);font-weight:bold;box-shadow:0 3px 0 var(--gold-dim);transition:transform .05s;}
   .btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--gold-dim);}
   .btn.secondary{background:transparent;color:var(--gold);border:1px solid var(--gold-dim);box-shadow:none;}
   .btn.ghost{background:transparent;color:var(--cream);border:1px solid var(--felt-line);box-shadow:none;font-size:14px;padding:9px 12px;}
   .btn.block{width:100%;}
   .btn.big{font-size:19px;padding:15px;}
+  .btn:disabled{opacity:.5;}
+
+  .game-card{
+    width:100%;text-align:left;background:var(--felt-2);border:1px solid var(--felt-line);
+    border-radius:14px;padding:18px;margin:12px 0;cursor:pointer;color:var(--cream);
+    font-family:inherit;box-shadow:0 6px 18px var(--shadow);display:flex;align-items:center;gap:16px;
+  }
+  .game-card:active{transform:translateY(2px);}
+  .game-card .emoji{font-size:38px;line-height:1;}
+  .game-card .gc-body{flex:1;}
+  .game-card .gc-title{font-size:22px;color:var(--gold);font-variant:small-caps;letter-spacing:1px;display:block;}
+  .game-card .gc-desc{font-size:13px;color:var(--gold-dim);margin-top:3px;line-height:1.4;display:block;}
+  .game-card .arrow{color:var(--gold-dim);font-size:24px;}
+
+  .rules{font-size:14px;line-height:1.6;color:var(--cream);}
+  .rules h3{color:var(--gold);font-size:15px;letter-spacing:1px;text-transform:uppercase;margin:14px 0 6px;}
+  .rules ul{margin:6px 0;padding-left:20px;}
+  .rules li{margin:3px 0;}
+  .rules .val-table{width:100%;border-collapse:collapse;margin:8px 0;font-size:14px;}
+  .rules .val-table td{padding:5px 8px;border-bottom:1px solid var(--felt-line);}
+  .rules .val-table td:last-child{text-align:right;color:var(--gold);}
 
   ul.list{list-style:none;margin:10px 0 0;padding:0;}
-  ul.list li{
-    display:flex;align-items:center;gap:10px;
-    padding:9px 0;border-bottom:1px solid var(--felt-line);
-  }
+  ul.list li{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--felt-line);}
   ul.list li:last-child{border-bottom:none;}
   ul.list .name{flex:1;font-size:18px;}
-  .pill{
-    background:#093427;border:1px solid var(--felt-line);
-    color:var(--gold-dim);width:30px;height:30px;border-radius:50%;
-    display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;
-  }
+  .pill{background:#093427;border:1px solid var(--felt-line);color:var(--gold-dim);width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;}
 
-  /* round header */
-  .round-bar{
-    display:flex;justify-content:space-between;align-items:center;
-    background:var(--felt-2);border:1px solid var(--felt-line);
-    border-radius:14px;padding:14px 16px;margin:14px 0;
-    box-shadow:0 6px 18px var(--shadow);
-  }
+  .round-bar{display:flex;justify-content:space-between;align-items:center;background:var(--felt-2);border:1px solid var(--felt-line);border-radius:14px;padding:14px 16px;margin:14px 0;box-shadow:0 6px 18px var(--shadow);}
   .round-bar .runde{font-size:13px;letter-spacing:2px;color:var(--gold-dim);text-transform:uppercase;}
   .round-bar .kort{font-size:34px;color:var(--gold);font-weight:bold;line-height:1;}
   .round-bar .kort small{font-size:13px;color:var(--gold-dim);font-weight:normal;letter-spacing:1px;}
@@ -102,160 +88,348 @@
   .trumf .suit{font-size:40px;line-height:1;}
   .trumf .suit.red{color:var(--red);}
   .trumf .suit.black{color:#e8e2d2;}
-  .trumf .suit.sans{font-size:24px;color:var(--gold);font-variant:small-caps;letter-spacing:1px;}
+  .trumf .suit.sans{font-size:28px;color:var(--gold);font-variant:small-caps;letter-spacing:1px;}
   .trumf .lbl{font-size:11px;letter-spacing:2px;color:var(--gold-dim);text-transform:uppercase;}
 
-  /* bid/take rows */
-  .prow{
-    display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:10px;
-    padding:12px 0;border-bottom:1px solid var(--felt-line);
-  }
+  .prow{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--felt-line);}
   .prow:last-child{border-bottom:none;}
   .prow .pname{font-size:18px;}
   .prow .pname small{display:block;font-size:12px;color:var(--gold-dim);letter-spacing:.5px;}
-  .stepper{display:flex;align-items:center;gap:8px;}
-  .stepper button{
-    width:38px;height:38px;border-radius:9px;border:1px solid var(--felt-line);
-    background:#093427;color:var(--gold);font-size:22px;cursor:pointer;font-family:inherit;
-  }
-  .stepper .val{min-width:26px;text-align:center;font-size:22px;color:var(--cream);}
+  .stepper{display:flex;align-items:center;gap:6px;}
+  .stepper button{width:38px;height:38px;border-radius:9px;border:1px solid var(--felt-line);background:#093427;color:var(--gold);font-size:22px;cursor:pointer;font-family:inherit;}
+  .stepper .val{min-width:42px;text-align:center;font-size:22px;color:var(--cream);}
   .colhead{display:grid;grid-template-columns:1fr auto auto;gap:10px;font-size:11px;letter-spacing:1px;color:var(--gold-dim);text-transform:uppercase;padding-bottom:4px;}
-  .colhead span:nth-child(2),.colhead span:nth-child(3){text-align:center;width:118px;}
 
-  .warn{
-    margin-top:12px;padding:10px 12px;border-radius:9px;
-    background:rgba(232,196,104,.12);border:1px solid var(--gold-dim);
-    font-size:14px;color:var(--gold);
-  }
+  .warn{margin-top:12px;padding:10px 12px;border-radius:9px;background:rgba(232,196,104,.12);border:1px solid var(--gold-dim);font-size:14px;color:var(--gold);}
   .warn.bad{background:rgba(209,75,75,.15);border-color:var(--red);color:#f0b0b0;}
 
-  /* scoreboard */
-  table{width:100%;border-collapse:collapse;font-size:15px;}
-  th,td{padding:9px 6px;text-align:center;border-bottom:1px solid var(--felt-line);}
-  th{font-size:11px;letter-spacing:1px;color:var(--gold-dim);text-transform:uppercase;font-weight:normal;}
-  td.name{text-align:left;font-size:16px;}
-  tr.leader td.total{color:var(--gold);font-weight:bold;}
-  td.total{font-weight:bold;font-size:17px;}
+  table.board{width:100%;border-collapse:collapse;font-size:15px;}
+  table.board th,table.board td{padding:9px 6px;text-align:center;border-bottom:1px solid var(--felt-line);}
+  table.board th{font-size:11px;letter-spacing:1px;color:var(--gold-dim);text-transform:uppercase;font-weight:normal;}
+  table.board td.name{text-align:left;font-size:16px;}
+  table.board tr.leader td.total{color:var(--gold);font-weight:bold;}
+  table.board td.total{font-weight:bold;font-size:17px;}
   .cell-hit{color:var(--hit);}
   .cell-miss{color:#c98a8a;}
   .crown{color:var(--gold);}
 
   .footer-actions{display:flex;gap:10px;margin-top:14px;}
   .footer-actions .btn{flex:1;}
-
   .hidden{display:none;}
   .tag{font-size:12px;color:var(--gold-dim);text-align:center;margin-top:18px;letter-spacing:1px;}
 
-  /* install bar */
-  .install-bar{
-    position:fixed;left:0;right:0;bottom:0;
-    padding:12px 14px calc(12px + env(safe-area-inset-bottom));
-    background:rgba(7,40,30,.96);
-    border-top:1px solid var(--gold-dim);
-    box-shadow:0 -4px 16px var(--shadow);
-    display:flex;align-items:center;gap:12px;
-    z-index:50;
-  }
-  .install-bar .txt{flex:1;font-size:14px;color:var(--cream);line-height:1.4;}
-  .install-bar .txt b{color:var(--gold);}
-  .install-bar .x{
-    background:none;border:none;color:var(--gold-dim);font-size:22px;cursor:pointer;padding:4px;line-height:1;
-  }
-  .ios-help{
-    margin:10px 0 0;font-size:14px;color:var(--cream);line-height:1.6;
-    background:rgba(232,196,104,.1);border:1px solid var(--gold-dim);border-radius:9px;padding:12px;
-  }
-  .ios-help .share{color:var(--gold);font-weight:bold;}
-
-  .win-banner{
-    text-align:center;padding:20px;border-radius:14px;
-    background:linear-gradient(180deg, rgba(232,196,104,.18), transparent);
-    border:1px solid var(--gold-dim);margin:14px 0;
-  }
+  .win-banner{text-align:center;padding:20px;border-radius:14px;background:linear-gradient(180deg, rgba(232,196,104,.18), transparent);border:1px solid var(--gold-dim);margin:14px 0;}
   .win-banner .who{font-size:28px;color:var(--gold);font-variant:small-caps;}
   .win-banner .pts{font-size:15px;color:var(--cream);margin-top:4px;}
+
+  .install-bar{position:fixed;left:0;right:0;bottom:0;padding:12px 14px calc(12px + env(safe-area-inset-bottom));background:rgba(7,40,30,.96);border-top:1px solid var(--gold-dim);box-shadow:0 -4px 16px var(--shadow);display:flex;align-items:center;gap:12px;z-index:50;}
+  .install-bar .txt{flex:1;font-size:14px;color:var(--cream);line-height:1.4;}
+  .install-bar .txt b{color:var(--gold);}
+  .install-bar .x{background:none;border:none;color:var(--gold-dim);font-size:22px;cursor:pointer;padding:4px;line-height:1;}
+
+  details summary{list-style:none;}
+  details summary::-webkit-details-marker{display:none;}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>Spasser Vest</h1>
-    <div class="sub">Meld dine stik</div>
+    <button class="home-btn hidden" id="homeBtn">‹ Menu</button>
+    <h1 id="appTitle">Kortspil</h1>
+    <div class="sub" id="appSub">Vælg et spil</div>
   </header>
 
-  <!-- SETUP -->
-  <section id="setup">
-    <div class="panel">
-      <label>Spillere (i den rækkefølge de melder)</label>
-      <div class="player-add">
-        <input type="text" id="nameInput" placeholder="Navn" maxlength="14" autocomplete="off">
-        <button class="btn" id="addBtn">Tilføj</button>
-      </div>
-      <ul class="list" id="playerList"></ul>
-    </div>
-
-    <div class="panel">
-      <label>Antal kort i første runde</label>
-      <input type="number" id="startCards" value="10" min="1" max="13">
-      <p style="font-size:13px;color:var(--gold-dim);margin:10px 0 0;line-height:1.5;">
-        Spillet går fra dette antal ned til 1 og op igen. Trumf skifter hver runde:
-        spar ♠ → hjerter ♥ → ruder ♦ → klør ♣ → sans.
-      </p>
-    </div>
-
-    <button class="btn block big" id="startBtn">Start spil</button>
+  <!-- ============ MENU ============ -->
+  <section id="menu">
+    <button class="game-card" data-game="spasser">
+      <span class="emoji">♠</span>
+      <span class="gc-body">
+        <span class="gc-title">Spasser Vest</span>
+        <span class="gc-desc">Meld dine stik. Trumf skifter hver runde. Ramt melding giver point.</span>
+      </span>
+      <span class="arrow">›</span>
+    </button>
+    <button class="game-card" data-game="rummy">
+      <span class="emoji">🃏</span>
+      <span class="gc-body">
+        <span class="gc-title">500 Rummy</span>
+        <span class="gc-desc">Læg sæt og sekvenser ned. Først til 500 point vinder.</span>
+      </span>
+      <span class="arrow">›</span>
+    </button>
+    <button class="game-card" data-game="enogtredive">
+      <span class="emoji">🂭</span>
+      <span class="gc-body">
+        <span class="gc-title">31</span>
+        <span class="gc-desc">Saml tre kort i samme farve så tæt på 31 som muligt. Kun regler.</span>
+      </span>
+      <span class="arrow">›</span>
+    </button>
+    <button class="game-card" data-game="rovhul">
+      <span class="emoji">🃏</span>
+      <span class="gc-body">
+        <span class="gc-title">Røvhul</span>
+        <span class="gc-desc">Kom af med dine kort først. Vind dig til Præsident. Kun regler.</span>
+      </span>
+      <span class="arrow">›</span>
+    </button>
+    <a class="game-card" href="kabale.html" style="text-decoration:none;">
+      <span class="emoji">🂡</span>
+      <span class="gc-body">
+        <span class="gc-title">Kabale</span>
+        <span class="gc-desc">Klondike — den klassiske 7-bælter. Spil selv på telefonen.</span>
+      </span>
+      <span class="arrow">›</span>
+    </a>
   </section>
 
-  <!-- GAME -->
-  <section id="game" class="hidden">
-    <div class="round-bar">
-      <div>
-        <div class="runde" id="roundLabel">Runde 1</div>
-        <div class="kort"><span id="cardCount">10</span> <small>kort</small></div>
+  <!-- ============ SPASSER VEST ============ -->
+  <section id="spasser" class="hidden">
+    <div id="sv-setup">
+      <div class="panel">
+        <label>Spillere (i den rækkefølge de melder)</label>
+        <div class="player-add">
+          <input type="text" id="sv-name" placeholder="Navn" maxlength="14" autocomplete="off">
+          <button class="btn" id="sv-add">Tilføj</button>
+        </div>
+        <ul class="list" id="sv-list"></ul>
       </div>
-      <div class="trumf">
-        <div class="lbl">Trumf</div>
-        <div class="suit" id="trumfSuit">♠</div>
+      <div class="panel">
+        <label>Antal kort i første runde</label>
+        <input type="number" id="sv-startcards" value="10" min="1" max="13">
+        <p style="font-size:13px;color:var(--gold-dim);margin:10px 0 0;line-height:1.5;">
+          Spillet går fra dette antal ned til 1 og op igen. Trumf skifter hver runde: spar ♠ → hjerter ♥ → ruder ♦ → klør ♣ → sans.
+        </p>
       </div>
+      <details class="panel"><summary style="cursor:pointer;color:var(--gold);font-variant:small-caps;letter-spacing:1px;font-size:16px;">▸ Regler & point</summary>
+        <div class="rules">
+          <h3>Sådan spilles</h3>
+          <ul>
+            <li>Hver spiller melder på skift, hvor mange stik de tror de tager i runden.</li>
+            <li>Summen af alle meldinger må <b>ikke</b> gå op med antal kort — sidste melder (kortgiver) er derfor begrænset, så mindst én altid fejler.</li>
+            <li>Antal kort går fra start (fx 10) ned til 1 og op igen.</li>
+            <li>Trumf skifter hver runde: spar → hjerter → ruder → klør → sans (ingen trumf).</li>
+          </ul>
+          <h3>Point</h3>
+          <ul>
+            <li><b>Ramt melding:</b> 10 + antal meldte stik (meldt 3 og fik 3 = 13 point).</li>
+            <li><b>Fejlet melding:</b> 0 point.</li>
+          </ul>
+          <p>Flest point efter sidste runde vinder.</p>
+        </div>
+      </details>
+      <button class="btn block big" id="sv-start">Start spil</button>
     </div>
 
-    <!-- BIDDING -->
-    <div class="panel" id="bidPanel">
-      <label>Meld antal stik</label>
-      <div id="bidRows"></div>
-      <div class="warn" id="bidWarn"></div>
-      <button class="btn block big" id="bidDoneBtn" style="margin-top:14px;">Videre til resultat</button>
-    </div>
-
-    <!-- TAKING -->
-    <div class="panel hidden" id="takePanel">
-      <label>Hvor mange stik fik hver?</label>
-      <div class="colhead"><span>Spiller</span><span>Meldt</span><span>Fik</span></div>
-      <div id="takeRows"></div>
-      <div class="warn" id="takeWarn"></div>
+    <div id="sv-game" class="hidden">
+      <div class="round-bar">
+        <div>
+          <div class="runde" id="sv-roundlabel">Runde 1</div>
+          <div class="kort"><span id="sv-cardcount">10</span> <small>kort</small></div>
+        </div>
+        <div class="trumf">
+          <div class="lbl">Trumf</div>
+          <div class="suit" id="sv-suit">♠</div>
+        </div>
+      </div>
+      <div class="panel" id="sv-bidpanel">
+        <label>Meld antal stik</label>
+        <div id="sv-bidrows"></div>
+        <div class="warn" id="sv-bidwarn"></div>
+        <button class="btn block big" id="sv-biddone" style="margin-top:14px;">Videre til resultat</button>
+      </div>
+      <div class="panel hidden" id="sv-takepanel">
+        <label>Hvor mange stik fik hver?</label>
+        <div class="colhead"><span>Spiller</span><span>Meldt</span><span>Fik</span></div>
+        <div id="sv-takerows"></div>
+        <div class="warn" id="sv-takewarn"></div>
+        <div class="footer-actions">
+          <button class="btn secondary" id="sv-back">Tilbage</button>
+          <button class="btn" id="sv-score">Beregn point</button>
+        </div>
+      </div>
+      <div class="panel">
+        <label>Stilling</label>
+        <div style="overflow-x:auto;"><table class="board" id="sv-board"></table></div>
+      </div>
+      <div id="sv-winbox"></div>
       <div class="footer-actions">
-        <button class="btn secondary" id="backToBid">Tilbage</button>
-        <button class="btn" id="scoreBtn">Beregn point</button>
+        <button class="btn ghost" id="sv-undo">Fortryd sidste runde</button>
+        <button class="btn ghost" id="sv-reset">Nyt spil</button>
       </div>
     </div>
+  </section>
 
-    <!-- SCOREBOARD -->
+  <!-- ============ 500 RUMMY ============ -->
+  <section id="rummy" class="hidden">
+    <div id="rm-setup">
+      <div class="panel">
+        <label>Spillere</label>
+        <div class="player-add">
+          <input type="text" id="rm-name" placeholder="Navn" maxlength="14" autocomplete="off">
+          <button class="btn" id="rm-add">Tilføj</button>
+        </div>
+        <ul class="list" id="rm-list"></ul>
+      </div>
+      <div class="panel">
+        <label>Målscore</label>
+        <input type="number" id="rm-target" value="500" min="100" max="2000" step="50">
+        <p style="font-size:13px;color:var(--gold-dim);margin:10px 0 0;line-height:1.5;">Første spiller til at nå målet (standard 500) vinder.</p>
+      </div>
+      <details class="panel"><summary style="cursor:pointer;color:var(--gold);font-variant:small-caps;letter-spacing:1px;font-size:16px;">▸ Regler & point</summary>
+        <div class="rules">
+          <h3>Sådan spilles</h3>
+          <ul>
+            <li>Man samler <b>sæt</b> (3-4 ens, fx tre damer) og <b>sekvenser</b> (3+ i træk i samme farve, fx ♥5-6-7).</li>
+            <li>Hver tur trækker man et kort og kan lægge spil ned på bordet.</li>
+            <li>En runde slutter når en spiller går ud (alle kort lagt ned), eller bunken er tom.</li>
+          </ul>
+          <h3>Sådan tælles point hver runde</h3>
+          <ul>
+            <li>Tæl værdien af de kort hver spiller har <b>lagt ned på bordet</b> = plus.</li>
+            <li>Træk værdien af kortene de stadig har <b>på hånden</b> fra = minus.</li>
+            <li>Resultatet kan godt blive negativt i en runde.</li>
+          </ul>
+          <h3>Kortværdier</h3>
+          <table class="val-table">
+            <tr><td>Joker</td><td>25</td></tr>
+            <tr><td>Es</td><td>15</td></tr>
+            <tr><td>10, knægt, dame, konge</td><td>10</td></tr>
+            <tr><td>2–9 (under 10)</td><td>5</td></tr>
+          </table>
+          <p>Først til <b>500</b> samlet vinder.</p>
+        </div>
+      </details>
+      <button class="btn block big" id="rm-start">Start spil</button>
+    </div>
+
+    <div id="rm-game" class="hidden">
+      <div class="round-bar">
+        <div>
+          <div class="runde">500 Rummy</div>
+          <div class="kort"><span id="rm-roundno">1</span>. <small>runde</small></div>
+        </div>
+        <div class="trumf">
+          <div class="lbl">Mål</div>
+          <div class="suit sans" id="rm-targetlabel">500</div>
+        </div>
+      </div>
+      <div class="panel" id="rm-entrypanel">
+        <label>Rundens point — nedlagt minus hånd</label>
+        <p style="font-size:13px;color:var(--gold-dim);margin:-2px 0 12px;line-height:1.5;">
+          Tast hver spillers nettoresultat. Tryk <b>Tæl</b> for at lade appen lægge kortene sammen.
+        </p>
+        <div id="rm-entryrows"></div>
+        <button class="btn block big" id="rm-addround" style="margin-top:14px;">Tilføj runde</button>
+      </div>
+      <div class="panel">
+        <label>Stilling</label>
+        <div style="overflow-x:auto;"><table class="board" id="rm-board"></table></div>
+      </div>
+      <div id="rm-winbox"></div>
+      <div class="footer-actions">
+        <button class="btn ghost" id="rm-undo">Fortryd sidste runde</button>
+        <button class="btn ghost" id="rm-reset">Nyt spil</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 31 (rules only) ============ -->
+  <section id="enogtredive" class="hidden">
     <div class="panel">
-      <label>Stilling</label>
-      <div style="overflow-x:auto;">
-        <table id="board"></table>
+      <div class="rules">
+        <p style="margin-top:0;">31 (også kaldet <i>Schwimmen</i> eller <i>Scat</i>) er et hurtigt spil. Målet er at samle tre kort i <b>samme farve</b> med så høj samlet værdi som muligt — helst præcis 31.</p>
+
+        <h3>Kortværdier</h3>
+        <table class="val-table">
+          <tr><td>Es</td><td>11</td></tr>
+          <tr><td>Konge, dame, knægt, 10</td><td>10</td></tr>
+          <tr><td>9 ned til 2</td><td>pålydende</td></tr>
+        </table>
+        <p style="font-size:13px;color:var(--gold-dim);">Kun kort i <b>samme farve</b> tælles sammen. Fx ♥A + ♥10 + ♥7 = 28 i hjerter. Tre ens (fx tre konger) tæller 30½.</p>
+
+        <h3>Sådan spilles</h3>
+        <ul>
+          <li>Hver spiller får 3 kort. 3 kort lægges åbent i midten.</li>
+          <li>På skift må du bytte ét af dine kort med ét fra midten — eller bytte alle tre på én gang — eller stå over.</li>
+          <li>Du prøver at få din bedste farve så tæt på 31 som muligt.</li>
+        </ul>
+
+        <h3>At banke</h3>
+        <ul>
+          <li>Når du synes din hånd er god nok, <b>banker</b> du i bordet i stedet for at bytte.</li>
+          <li>Alle andre får så én tur mere, hvorefter alle viser kort.</li>
+          <li>Den med <b>lavest</b> hånd taber runden.</li>
+        </ul>
+
+        <h3>Liv</h3>
+        <ul>
+          <li>Man spiller typisk med 3 liv (brug brikker eller tændstikker).</li>
+          <li>Den med lavest sum hver runde mister et liv.</li>
+          <li>Når du har mistet alle liv, "svømmer" du — en sidste chance. Taber du igen, er du ude.</li>
+          <li>Sidste spiller tilbage vinder.</li>
+        </ul>
+
+        <h3>Særregel</h3>
+        <ul>
+          <li>Får nogen præcis <b>31</b>, vises kortene straks, og alle andre mister et liv.</li>
+        </ul>
+
+        <p style="font-size:13px;color:var(--gold-dim);margin-top:14px;">Varianterne svinger — især om I spiller med liv eller blot tæller point, og om tre ens = 30½ eller 31. Aftal det inden I starter.</p>
       </div>
     </div>
+  </section>
 
-    <div id="winBox"></div>
+  <!-- ============ RØVHUL (rules only) ============ -->
+  <section id="rovhul" class="hidden">
+    <div class="panel">
+      <div class="rules">
+        <p style="margin-top:0;">Røvhul (også kaldet <i>President</i> eller <i>Skid</i>) er et spil for 3-7 spillere, hvor man kæmper om at slippe af med alle sine kort først. Den første bliver <b>Præsident</b>, den sidste bliver <b>Røvhul</b>.</p>
 
-    <div class="footer-actions">
-      <button class="btn ghost" id="undoBtn">Fortryd sidste runde</button>
-      <button class="btn ghost" id="resetBtn">Nyt spil</button>
+        <h3>Kortrækkefølge</h3>
+        <p>Fra lavest til højest: 3 – 4 – 5 – 6 – 7 – 8 – 9 – 10 – J – Q – K – A – <b>2</b> (toeren er højest). Nogle spiller med jokere som allerhøjest.</p>
+
+        <h3>Sådan spilles</h3>
+        <ul>
+          <li>Alle kort deles ud. Den med ♣3 (eller laveste kort) starter.</li>
+          <li>Man lægger på skift et kort — eller flere ens (to ens, tre ens) — der skal være <b>højere</b> end det forrige, og i samme antal.</li>
+          <li>Kan eller vil du ikke slå det forrige, må du passe. Du er så ude af runden, til alle har passet.</li>
+          <li>Når alle andre passer, fjernes bunken, og den der lagde sidst starter en ny runde.</li>
+        </ul>
+
+        <h3>Særregler (almindelige varianter)</h3>
+        <ul>
+          <li><b>To ens lægges samtidig:</b> så skal næste også lægge to ens, højere.</li>
+          <li><b>Fire ens (eller to ens oven på to ens):</b> "brænder" bunken — den ryger væk, og du starter forfra.</li>
+          <li><b>Toer:</b> højeste kort; et udspillet 2 kan ofte også brænde bunken.</li>
+          <li>Aftal jeres egne husregler inden start — de svinger meget.</li>
+        </ul>
+
+        <h3>Roller til næste spil</h3>
+        <ul>
+          <li>Først færdig = <b>Præsident</b>. Sidst tilbage = <b>Røvhul</b>.</li>
+          <li>Før næste spil giver Røvhullet sine <b>2 bedste</b> kort til Præsidenten, som giver 2 valgfrie (dårlige) tilbage.</li>
+          <li>Med flere spillere: Vicepræsident og Vicerøvhul bytter 1 kort.</li>
+        </ul>
+
+        <p style="font-size:13px;color:var(--gold-dim);margin-top:14px;">Der findes mange husregler (8'er-stop, 7'er-tvang, jokere osv.). Bliv enige om hvilke I bruger inden I starter.</p>
+      </div>
     </div>
   </section>
 
   <div class="tag">Fysiske kort · appen holder kun score</div>
+</div>
+<div id="rm-calc" class="hidden" style="position:fixed;inset:0;background:rgba(5,25,18,.9);z-index:60;display:flex;align-items:flex-end;">
+  <div style="background:var(--felt-2);border-top:1px solid var(--gold-dim);border-radius:16px 16px 0 0;width:100%;max-width:560px;margin:0 auto;padding:18px 16px calc(18px + env(safe-area-inset-bottom));max-height:85vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <strong id="rm-calc-title" style="color:var(--gold);font-size:18px;">Tæl kort</strong>
+      <button class="btn ghost" id="rm-calc-close">Luk</button>
+    </div>
+    <p style="font-size:13px;color:var(--gold-dim);margin:0 0 4px;">Tæl kortenes værdi. Resultat = nedlagt − hånd.</p>
+    <div id="rm-calc-rows"></div>
+    <div class="warn" id="rm-calc-result" style="margin-top:14px;"></div>
+    <button class="btn block big" id="rm-calc-apply" style="margin-top:12px;">Brug dette resultat</button>
+  </div>
 </div>
 
 <div class="install-bar hidden" id="installBar">
@@ -265,352 +439,339 @@
 </div>
 
 <script>
-const SUITS = [
-  {sym:'♠', name:'Spar',    cls:'black'},
-  {sym:'♥', name:'Hjerter', cls:'red'},
-  {sym:'♦', name:'Ruder',   cls:'red'},
-  {sym:'♣', name:'Klør',    cls:'black'},
-  {sym:'SANS', name:'Sans', cls:'sans'},
-];
+function escapeHtml(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function $(id){return document.getElementById(id);}
 
-let state = load() || freshState();
-
-function freshState(){
-  return {
-    players:[],        // [{name}]
-    startCards:10,
-    started:false,
-    rounds:[],         // history: [{cards, suitIdx, bids:[], takes:[], scores:[]}]
-    roundIdx:0,        // current round index
-    cardSeq:[],        // sequence of card counts
-    phase:'bid',       // 'bid' | 'take'
-    curBids:[],
-    curTakes:[],
-  };
-}
-
-function save(){ try{localStorage.setItem('spasserVest', JSON.stringify(state));}catch(e){} }
-function load(){ try{return JSON.parse(localStorage.getItem('spasserVest'));}catch(e){return null;} }
-
-function buildSequence(start){
-  const seq=[];
-  for(let c=start;c>=1;c--) seq.push(c);
-  for(let c=2;c<=start;c++) seq.push(c);
-  return seq;
-}
-
-/* ---------- SETUP ---------- */
-const nameInput=document.getElementById('nameInput');
-const playerList=document.getElementById('playerList');
-
-function renderPlayers(){
-  playerList.innerHTML='';
-  state.players.forEach((p,i)=>{
-    const li=document.createElement('li');
-    li.innerHTML=`<span class="pill" data-up="${i}">↑</span>
-      <span class="name">${escapeHtml(p.name)}</span>
-      <span class="pill" data-del="${i}">✕</span>`;
-    playerList.appendChild(li);
-  });
-}
-function escapeHtml(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-
-document.getElementById('addBtn').onclick=addPlayer;
-nameInput.addEventListener('keydown',e=>{if(e.key==='Enter')addPlayer();});
-function addPlayer(){
-  const n=nameInput.value.trim();
-  if(!n)return;
-  state.players.push({name:n});
-  nameInput.value='';nameInput.focus();
-  renderPlayers();save();
-}
-playerList.addEventListener('click',e=>{
-  const del=e.target.dataset.del, up=e.target.dataset.up;
-  if(del!==undefined){state.players.splice(+del,1);renderPlayers();save();}
-  if(up!==undefined && +up>0){
-    const i=+up;[state.players[i-1],state.players[i]]=[state.players[i],state.players[i-1]];
-    renderPlayers();save();
-  }
-});
-
-document.getElementById('startBtn').onclick=()=>{
-  if(state.players.length<2){alert('Tilføj mindst 2 spillere.');return;}
-  state.startCards=Math.max(1,Math.min(13,+document.getElementById('startCards').value||10));
-  state.cardSeq=buildSequence(state.startCards);
-  state.started=true;state.roundIdx=0;state.rounds=[];
-  startRound();
-};
-
-/* ---------- ROUND ---------- */
-function curCards(){return state.cardSeq[state.roundIdx];}
-function curSuit(){return SUITS[state.roundIdx % SUITS.length];}
-
-function startRound(){
-  state.phase='bid';
-  state.curBids=state.players.map(()=>0);
-  state.curTakes=state.players.map(()=>0);
-  save();
-  showGame();
-}
-
-function showGame(){
-  document.getElementById('setup').classList.add('hidden');
-  document.getElementById('game').classList.remove('hidden');
-  renderRoundBar();
-  renderPhase();
-  renderBoard();
-}
-
-function renderRoundBar(){
-  document.getElementById('roundLabel').textContent=`Runde ${state.roundIdx+1} af ${state.cardSeq.length}`;
-  document.getElementById('cardCount').textContent=curCards();
-  const s=curSuit();
-  const el=document.getElementById('trumfSuit');
-  el.textContent=s.sym;
-  el.className='suit '+s.cls;
-}
-
-function renderPhase(){
-  document.getElementById('bidPanel').classList.toggle('hidden',state.phase!=='bid');
-  document.getElementById('takePanel').classList.toggle('hidden',state.phase!=='take');
-  if(state.phase==='bid')renderBids(); else renderTakes();
-}
-
-/* stepper builder */
-function stepper(val,max,onChange){
+function stepper(val,min,max,onChange){
   const div=document.createElement('div');div.className='stepper';
   const minus=document.createElement('button');minus.textContent='−';
   const span=document.createElement('span');span.className='val';span.textContent=val;
   const plus=document.createElement('button');plus.textContent='+';
-  minus.onclick=()=>{if(val>0){val--;span.textContent=val;onChange(val);}};
+  minus.onclick=()=>{if(val>min){val--;span.textContent=val;onChange(val);}};
   plus.onclick=()=>{if(val<max){val++;span.textContent=val;onChange(val);}};
   div.append(minus,span,plus);
-  return div;
+  return {el:div,set:v=>{val=v;span.textContent=v;}};
 }
 
-function renderBids(){
-  const box=document.getElementById('bidRows');box.innerHTML='';
-  const cards=curCards();
-  state.players.forEach((p,i)=>{
+const DEFAULT={
+  screen:'menu',
+  sv:{players:[],startCards:10,started:false,rounds:[],roundIdx:0,cardSeq:[],phase:'bid',curBids:[],curTakes:[]},
+  rm:{players:[],target:500,started:false,rounds:[],cur:[]}
+};
+let app = load() || JSON.parse(JSON.stringify(DEFAULT));
+
+function save(){try{localStorage.setItem('kortspil',JSON.stringify(app));}catch(e){}}
+function load(){try{return JSON.parse(localStorage.getItem('kortspil'));}catch(e){return null;}}
+
+/* ---------- NAVIGATION ---------- */
+function show(screen){
+  app.screen=screen;save();
+  $('menu').classList.toggle('hidden',screen!=='menu');
+  $('spasser').classList.toggle('hidden',screen!=='spasser');
+  $('rummy').classList.toggle('hidden',screen!=='rummy');
+  $('enogtredive').classList.toggle('hidden',screen!=='enogtredive');
+  $('rovhul').classList.toggle('hidden',screen!=='rovhul');
+  $('homeBtn').classList.toggle('hidden',screen==='menu');
+  if(screen==='menu'){$('appTitle').textContent='Kortspil';$('appSub').textContent='Vælg et spil';}
+  if(screen==='spasser'){$('appTitle').textContent='Spasser Vest';$('appSub').textContent='Meld dine stik';svRender();}
+  if(screen==='rummy'){$('appTitle').textContent='500 Rummy';$('appSub').textContent='Først til 500';rmRender();}
+  if(screen==='enogtredive'){$('appTitle').textContent='31';$('appSub').textContent='Regler';}
+  if(screen==='rovhul'){$('appTitle').textContent='Røvhul';$('appSub').textContent='Regler';}
+}
+document.querySelectorAll('.game-card').forEach(c=>{c.onclick=()=>show(c.dataset.game);});
+$('homeBtn').onclick=()=>show('menu');
+
+/* ============ SPASSER VEST ============ */
+const SUITS=[
+  {sym:'♠',name:'Spar',cls:'black'},
+  {sym:'♥',name:'Hjerter',cls:'red'},
+  {sym:'♦',name:'Ruder',cls:'red'},
+  {sym:'♣',name:'Klør',cls:'black'},
+  {sym:'SANS',name:'Sans',cls:'sans'},
+];
+const sv=()=>app.sv;
+function svBuildSeq(start){const s=[];for(let c=start;c>=1;c--)s.push(c);for(let c=2;c<=start;c++)s.push(c);return s;}
+function svRenderPlayers(){
+  const ul=$('sv-list');ul.innerHTML='';
+  sv().players.forEach((p,i)=>{
+    const li=document.createElement('li');
+    li.innerHTML=`<span class="pill" data-up="${i}">↑</span><span class="name">${escapeHtml(p.name)}</span><span class="pill" data-del="${i}">✕</span>`;
+    ul.appendChild(li);
+  });
+}
+$('sv-add').onclick=svAdd;
+$('sv-name').addEventListener('keydown',e=>{if(e.key==='Enter')svAdd();});
+function svAdd(){const n=$('sv-name').value.trim();if(!n)return;sv().players.push({name:n});$('sv-name').value='';$('sv-name').focus();svRenderPlayers();save();}
+$('sv-list').addEventListener('click',e=>{
+  const del=e.target.dataset.del,up=e.target.dataset.up;
+  if(del!==undefined){sv().players.splice(+del,1);svRenderPlayers();save();}
+  if(up!==undefined&&+up>0){const i=+up;[sv().players[i-1],sv().players[i]]=[sv().players[i],sv().players[i-1]];svRenderPlayers();save();}
+});
+$('sv-start').onclick=()=>{
+  if(sv().players.length<2){alert('Tilføj mindst 2 spillere.');return;}
+  sv().startCards=Math.max(1,Math.min(13,+$('sv-startcards').value||10));
+  sv().cardSeq=svBuildSeq(sv().startCards);
+  sv().started=true;sv().roundIdx=0;sv().rounds=[];
+  svStartRound();
+};
+function svCards(){return sv().cardSeq[sv().roundIdx];}
+function svStartRound(){sv().phase='bid';sv().curBids=sv().players.map(()=>0);sv().curTakes=sv().players.map(()=>0);save();svShowGame();}
+function svShowGame(){$('sv-setup').classList.add('hidden');$('sv-game').classList.remove('hidden');svRoundBar();svPhase();svBoard();}
+function svRoundBar(){
+  $('sv-roundlabel').textContent=`Runde ${sv().roundIdx+1} af ${sv().cardSeq.length}`;
+  $('sv-cardcount').textContent=svCards();
+  const s=SUITS[sv().roundIdx%SUITS.length];
+  const el=$('sv-suit');el.textContent=s.sym;el.className='suit '+s.cls;
+}
+function svPhase(){
+  $('sv-bidpanel').classList.toggle('hidden',sv().phase!=='bid');
+  $('sv-takepanel').classList.toggle('hidden',sv().phase!=='take');
+  if(sv().phase==='bid')svBids();else svTakes();
+}
+function svBids(){
+  const box=$('sv-bidrows');box.innerHTML='';const cards=svCards();
+  sv().players.forEach((p,i)=>{
     const row=document.createElement('div');row.className='prow';
-    const isLast=i===state.players.length-1;
+    const last=i===sv().players.length-1;
     const nm=document.createElement('div');nm.className='pname';
-    nm.innerHTML=escapeHtml(p.name)+(isLast?'<small>kortgiver — må ikke få summen til at gå op</small>':'');
-    row.appendChild(nm);
-    row.appendChild(document.createElement('span'));
-    row.appendChild(stepper(state.curBids[i],cards,v=>{state.curBids[i]=v;save();checkBid();}));
+    nm.innerHTML=escapeHtml(p.name)+(last?'<small>kortgiver — summen må ikke gå op</small>':'');
+    row.appendChild(nm);row.appendChild(document.createElement('span'));
+    row.appendChild(stepper(sv().curBids[i],0,cards,v=>{sv().curBids[i]=v;save();svCheckBid();}).el);
     box.appendChild(row);
   });
-  checkBid();
+  svCheckBid();
 }
-
-function checkBid(){
-  const cards=curCards();
-  const sum=state.curBids.reduce((a,b)=>a+b,0);
-  const warn=document.getElementById('bidWarn');
-  const forbidden=cards - state.curBids.slice(0,-1).reduce((a,b)=>a+b,0);
+function svCheckBid(){
+  const cards=svCards();const sum=sv().curBids.reduce((a,b)=>a+b,0);const warn=$('sv-bidwarn');
+  const forbidden=cards-sv().curBids.slice(0,-1).reduce((a,b)=>a+b,0);
   if(sum===cards){
     warn.className='warn bad';
-    warn.textContent=`Summen er ${sum} = antal kort (${cards}). Det er ikke tilladt — kortgiver skal melde noget andet end ${forbidden}.`;
-    document.getElementById('bidDoneBtn').disabled=true;
-    document.getElementById('bidDoneBtn').style.opacity=.5;
+    warn.textContent=`Summen er ${sum} = antal kort (${cards}). Ikke tilladt — kortgiver må ikke melde ${forbidden}.`;
+    $('sv-biddone').disabled=true;
   }else{
     warn.className='warn';
-    warn.textContent=`Meldt i alt: ${sum} af ${cards} stik. Forskel: ${sum-cards>0?'+':''}${sum-cards}.`;
-    document.getElementById('bidDoneBtn').disabled=false;
-    document.getElementById('bidDoneBtn').style.opacity=1;
+    warn.textContent=`Meldt i alt: ${sum} af ${cards}. Forskel: ${sum-cards>0?'+':''}${sum-cards}.`;
+    $('sv-biddone').disabled=false;
   }
 }
-
-document.getElementById('bidDoneBtn').onclick=()=>{
-  state.phase='take';
-  state.curTakes=state.curBids.slice(); // default guess
-  save();renderPhase();
-};
-
-function renderTakes(){
-  const box=document.getElementById('takeRows');box.innerHTML='';
-  const cards=curCards();
-  state.players.forEach((p,i)=>{
+$('sv-biddone').onclick=()=>{sv().phase='take';sv().curTakes=sv().curBids.slice();save();svPhase();};
+function svTakes(){
+  const box=$('sv-takerows');box.innerHTML='';const cards=svCards();
+  sv().players.forEach((p,i)=>{
     const row=document.createElement('div');row.className='prow';
     const nm=document.createElement('div');nm.className='pname';nm.textContent=p.name;
-    const bid=document.createElement('span');bid.style.textAlign='center';bid.style.fontSize='20px';
-    bid.style.color='var(--gold-dim)';bid.textContent=state.curBids[i];
+    const bid=document.createElement('span');bid.style.textAlign='center';bid.style.fontSize='20px';bid.style.color='var(--gold-dim)';bid.textContent=sv().curBids[i];
     row.appendChild(nm);row.appendChild(bid);
-    row.appendChild(stepper(state.curTakes[i],cards,v=>{state.curTakes[i]=v;save();checkTake();}));
+    row.appendChild(stepper(sv().curTakes[i],0,cards,v=>{sv().curTakes[i]=v;save();svCheckTake();}).el);
     box.appendChild(row);
   });
-  checkTake();
+  svCheckTake();
 }
-
-function checkTake(){
-  const cards=curCards();
-  const sum=state.curTakes.reduce((a,b)=>a+b,0);
-  const warn=document.getElementById('takeWarn');
-  if(sum!==cards){
-    warn.className='warn bad';
-    warn.textContent=`Stik i alt: ${sum}. Skal være præcis ${cards} (alle stik fordeles). Ret tallene.`;
-    document.getElementById('scoreBtn').disabled=true;
-    document.getElementById('scoreBtn').style.opacity=.5;
-  }else{
-    warn.className='warn';
-    warn.textContent=`Alle ${cards} stik fordelt. ✓`;
-    document.getElementById('scoreBtn').disabled=false;
-    document.getElementById('scoreBtn').style.opacity=1;
-  }
+function svCheckTake(){
+  const cards=svCards();const sum=sv().curTakes.reduce((a,b)=>a+b,0);const warn=$('sv-takewarn');
+  if(sum!==cards){warn.className='warn bad';warn.textContent=`Stik i alt: ${sum}. Skal være præcis ${cards}.`;$('sv-score').disabled=true;}
+  else{warn.className='warn';warn.textContent=`Alle ${cards} stik fordelt. ✓`;$('sv-score').disabled=false;}
 }
-
-document.getElementById('backToBid').onclick=()=>{state.phase='bid';save();renderPhase();};
-
-document.getElementById('scoreBtn').onclick=()=>{
-  const cards=curCards();
-  const scores=state.players.map((p,i)=>{
-    const hit=state.curBids[i]===state.curTakes[i];
-    return hit ? 10+state.curBids[i] : 0;
-  });
-  state.rounds.push({
-    cards, suitIdx:state.roundIdx%SUITS.length,
-    bids:state.curBids.slice(), takes:state.curTakes.slice(), scores
-  });
-  state.roundIdx++;
-  if(state.roundIdx>=state.cardSeq.length){
-    finishGame();
-  }else{
-    startRound();
-  }
+$('sv-back').onclick=()=>{sv().phase='bid';save();svPhase();};
+$('sv-score').onclick=()=>{
+  const scores=sv().players.map((p,i)=>sv().curBids[i]===sv().curTakes[i]?10+sv().curBids[i]:0);
+  sv().rounds.push({cards:svCards(),suitIdx:sv().roundIdx%SUITS.length,bids:sv().curBids.slice(),takes:sv().curTakes.slice(),scores});
+  sv().roundIdx++;
+  if(sv().roundIdx>=sv().cardSeq.length)svFinish();else svStartRound();
 };
-
-/* ---------- SCOREBOARD ---------- */
-function totals(){
-  return state.players.map((p,i)=>state.rounds.reduce((a,r)=>a+r.scores[i],0));
-}
-
-function renderBoard(){
-  const tot=totals();
-  const maxTot=Math.max(...tot,0);
+function svTotals(){return sv().players.map((p,i)=>sv().rounds.reduce((a,r)=>a+r.scores[i],0));}
+function svBoard(){
+  const tot=svTotals();const maxTot=Math.max(...tot,0);
   let html='<tr><th class="name">Spiller</th>';
-  // show last few rounds
-  const showFrom=Math.max(0,state.rounds.length-6);
-  for(let r=showFrom;r<state.rounds.length;r++){
-    html+=`<th>${state.rounds[r].cards}${SUITS[state.rounds[r].suitIdx].sym==='SANS'?'·S':SUITS[state.rounds[r].suitIdx].sym}</th>`;
-  }
+  const from=Math.max(0,sv().rounds.length-6);
+  for(let r=from;r<sv().rounds.length;r++){const sym=SUITS[sv().rounds[r].suitIdx].sym;html+=`<th>${sv().rounds[r].cards}${sym==='SANS'?'·S':sym}</th>`;}
   html+='<th>I alt</th></tr>';
-  state.players.forEach((p,i)=>{
-    const leader = tot[i]===maxTot && maxTot>0;
+  sv().players.forEach((p,i)=>{
+    const leader=tot[i]===maxTot&&maxTot>0;
     html+=`<tr class="${leader?'leader':''}"><td class="name">${leader?'<span class="crown">♛ </span>':''}${escapeHtml(p.name)}</td>`;
-    for(let r=showFrom;r<state.rounds.length;r++){
-      const sc=state.rounds[r].scores[i];
-      const hit=sc>0;
-      html+=`<td class="${hit?'cell-hit':'cell-miss'}">${sc}</td>`;
-    }
+    for(let r=from;r<sv().rounds.length;r++){const s=sv().rounds[r].scores[i];html+=`<td class="${s>0?'cell-hit':'cell-miss'}">${s}</td>`;}
     html+=`<td class="total">${tot[i]}</td></tr>`;
   });
-  document.getElementById('board').innerHTML=html;
+  $('sv-board').innerHTML=html;
+}
+function svFinish(){
+  $('sv-bidpanel').classList.add('hidden');$('sv-takepanel').classList.add('hidden');svBoard();
+  const tot=svTotals();const max=Math.max(...tot);
+  const winners=sv().players.filter((p,i)=>tot[i]===max).map(p=>p.name);
+  $('sv-winbox').innerHTML=`<div class="win-banner"><div class="who">${winners.map(escapeHtml).join(' & ')} vandt!</div><div class="pts">${max} point</div></div>`;
+  $('sv-roundlabel').textContent='Spillet er slut';save();
+}
+$('sv-undo').onclick=()=>{
+  if(sv().rounds.length===0){if(confirm('Tilbage til opsætning?')){sv().started=false;save();svRender();}return;}
+  const last=sv().rounds.pop();sv().roundIdx=Math.max(0,sv().roundIdx-1);
+  sv().curBids=last.bids.slice();sv().curTakes=last.takes.slice();sv().phase='bid';
+  $('sv-winbox').innerHTML='';save();svShowGame();
+};
+$('sv-reset').onclick=()=>{if(confirm('Slet Spasser Vest-spillet og start forfra?')){app.sv=JSON.parse(JSON.stringify(DEFAULT.sv));save();svRender();}};
+function svRender(){
+  svRenderPlayers();
+  $('sv-startcards').value=sv().startCards;
+  if(sv().started){
+    $('sv-setup').classList.add('hidden');
+    if(sv().roundIdx>=sv().cardSeq.length&&sv().cardSeq.length){svShowGame();svFinish();}
+    else svShowGame();
+  }else{
+    $('sv-setup').classList.remove('hidden');$('sv-game').classList.add('hidden');$('sv-winbox').innerHTML='';
+  }
 }
 
-function finishGame(){
-  document.getElementById('bidPanel').classList.add('hidden');
-  document.getElementById('takePanel').classList.add('hidden');
-  renderBoard();
-  const tot=totals();
-  const max=Math.max(...tot);
-  const winners=state.players.filter((p,i)=>tot[i]===max).map(p=>p.name);
-  document.getElementById('winBox').innerHTML=
-    `<div class="win-banner"><div class="who">${winners.join(' & ')} vandt!</div>
-     <div class="pts">${max} point</div></div>`;
-  // hide round bar phase
-  document.getElementById('roundLabel').textContent='Spillet er slut';
+/* ============ 500 RUMMY ============ */
+const rm=()=>app.rm;
+function rmRenderPlayers(){
+  const ul=$('rm-list');ul.innerHTML='';
+  rm().players.forEach((p,i)=>{
+    const li=document.createElement('li');
+    li.innerHTML=`<span class="pill" data-up="${i}">↑</span><span class="name">${escapeHtml(p.name)}</span><span class="pill" data-del="${i}">✕</span>`;
+    ul.appendChild(li);
+  });
+}
+$('rm-add').onclick=rmAdd;
+$('rm-name').addEventListener('keydown',e=>{if(e.key==='Enter')rmAdd();});
+function rmAdd(){const n=$('rm-name').value.trim();if(!n)return;rm().players.push({name:n});$('rm-name').value='';$('rm-name').focus();rmRenderPlayers();save();}
+$('rm-list').addEventListener('click',e=>{
+  const del=e.target.dataset.del,up=e.target.dataset.up;
+  if(del!==undefined){rm().players.splice(+del,1);rmRenderPlayers();save();}
+  if(up!==undefined&&+up>0){const i=+up;[rm().players[i-1],rm().players[i]]=[rm().players[i],rm().players[i-1]];rmRenderPlayers();save();}
+});
+$('rm-start').onclick=()=>{
+  if(rm().players.length<2){alert('Tilføj mindst 2 spillere.');return;}
+  rm().target=Math.max(100,Math.min(2000,+$('rm-target').value||500));
+  rm().started=true;rm().rounds=[];
+  rmShowGame();
+};
+function rmShowGame(){$('rm-setup').classList.add('hidden');$('rm-game').classList.remove('hidden');$('rm-entrypanel').classList.remove('hidden');$('rm-targetlabel').textContent=rm().target;rmEntry();rmBoard();}
+function rmTotals(){return rm().players.map((p,i)=>rm().rounds.reduce((a,r)=>a+r.scores[i],0));}
+let rmSteppers=[];
+function rmEntry(){
+  rm().cur=rm().players.map(()=>0);
+  const box=$('rm-entryrows');box.innerHTML='';rmSteppers=[];
+  $('rm-roundno').textContent=rm().rounds.length+1;
+  rm().players.forEach((p,i)=>{
+    const row=document.createElement('div');row.className='prow';
+    const nm=document.createElement('div');nm.className='pname';nm.textContent=p.name;
+    row.appendChild(nm);
+    const countBtn=document.createElement('button');
+    countBtn.className='btn ghost';countBtn.textContent='Tæl';countBtn.style.padding='8px 12px';
+    countBtn.onclick=()=>rmOpenCalc(i,v=>{rm().cur[i]=v;rmSteppers[i].set(v);save();});
+    row.appendChild(countBtn);
+    const st=stepper(rm().cur[i],-500,500,v=>{rm().cur[i]=v;save();});
+    rmSteppers[i]=st;row.appendChild(st.el);
+    box.appendChild(row);
+  });
+}
+$('rm-addround').onclick=()=>{
+  rm().rounds.push({scores:rm().cur.slice()});save();
+  if(Math.max(...rmTotals())>=rm().target)rmFinish();
+  else{rmEntry();rmBoard();}
+};
+function rmBoard(){
+  const tot=rmTotals();const maxTot=Math.max(...tot,0);
+  let html='<tr><th class="name">Spiller</th>';
+  const from=Math.max(0,rm().rounds.length-6);
+  for(let r=from;r<rm().rounds.length;r++)html+=`<th>R${r+1}</th>`;
+  html+='<th>I alt</th></tr>';
+  rm().players.forEach((p,i)=>{
+    const leader=tot[i]===maxTot&&maxTot>0;
+    html+=`<tr class="${leader?'leader':''}"><td class="name">${leader?'<span class="crown">♛ </span>':''}${escapeHtml(p.name)}</td>`;
+    for(let r=from;r<rm().rounds.length;r++){const s=rm().rounds[r].scores[i];html+=`<td class="${s>=0?'cell-hit':'cell-miss'}">${s>0?'+':''}${s}</td>`;}
+    html+=`<td class="total">${tot[i]}</td></tr>`;
+  });
+  $('rm-board').innerHTML=html;
+}
+function rmFinish(){
+  $('rm-entrypanel').classList.add('hidden');rmBoard();
+  const tot=rmTotals();const max=Math.max(...tot);
+  const winners=rm().players.filter((p,i)=>tot[i]===max).map(p=>p.name);
+  $('rm-winbox').innerHTML=`<div class="win-banner"><div class="who">${winners.map(escapeHtml).join(' & ')} vandt!</div><div class="pts">${max} point</div></div>`;
   save();
 }
-
-document.getElementById('undoBtn').onclick=()=>{
-  if(state.rounds.length===0){
-    if(confirm('Gå tilbage til opsætning?')){state.started=false;save();location.reload();}
-    return;
-  }
-  const last=state.rounds.pop();
-  state.roundIdx=Math.max(0,state.roundIdx-1);
-  state.curBids=last.bids.slice();
-  state.curTakes=last.takes.slice();
-  state.phase='bid';
-  document.getElementById('winBox').innerHTML='';
-  save();showGame();
+$('rm-undo').onclick=()=>{
+  if(rm().rounds.length===0){if(confirm('Tilbage til opsætning?')){rm().started=false;save();rmRender();}return;}
+  rm().rounds.pop();$('rm-winbox').innerHTML='';$('rm-entrypanel').classList.remove('hidden');
+  save();rmEntry();rmBoard();
 };
-
-document.getElementById('resetBtn').onclick=()=>{
-  if(confirm('Slet spillet og start forfra?')){
-    state=freshState();save();location.reload();
+$('rm-reset').onclick=()=>{if(confirm('Slet 500 Rummy-spillet og start forfra?')){app.rm=JSON.parse(JSON.stringify(DEFAULT.rm));save();rmRender();}};
+function rmRender(){
+  rmRenderPlayers();
+  $('rm-target').value=rm().target;
+  if(rm().started){
+    $('rm-setup').classList.add('hidden');rmShowGame();
+    if(Math.max(...rmTotals(),0)>=rm().target)rmFinish();
+  }else{
+    $('rm-setup').classList.remove('hidden');$('rm-game').classList.add('hidden');$('rm-winbox').innerHTML='';
   }
-};
+}
 
-/* ---------- INSTALL ---------- */
-(function(){
-  // Register service worker (offline + install support)
-  if('serviceWorker' in navigator){
-    window.addEventListener('load',()=>{
-      navigator.serviceWorker.register('./sw.js').catch(()=>{});
+/* ---- card-counting calculator ---- */
+const CARD_TYPES=[
+  {key:'joker',label:'Joker',val:25},
+  {key:'ace',label:'Es',val:15},
+  {key:'ten',label:'10 / J / Q / K',val:10},
+  {key:'low',label:'2–9 (under 10)',val:5},
+];
+let calcCb=null,calcLaid={},calcHand={};
+function rmOpenCalc(pi,cb){
+  calcCb=cb;calcLaid={};calcHand={};
+  CARD_TYPES.forEach(t=>{calcLaid[t.key]=0;calcHand[t.key]=0;});
+  $('rm-calc-title').textContent='Tæl kort — '+rm().players[pi].name;
+  const box=$('rm-calc-rows');box.innerHTML='';
+  const mk=(title,store)=>{
+    const wrap=document.createElement('div');
+    wrap.innerHTML=`<div style="color:var(--gold-dim);font-size:12px;letter-spacing:1px;text-transform:uppercase;margin:12px 0 2px;">${title}</div>`;
+    CARD_TYPES.forEach(t=>{
+      const row=document.createElement('div');row.className='prow';row.style.padding='8px 0';
+      const nm=document.createElement('div');nm.className='pname';nm.style.fontSize='15px';
+      nm.innerHTML=`${t.label} <small>${t.val} pr. stk</small>`;
+      row.appendChild(nm);row.appendChild(document.createElement('span'));
+      row.appendChild(stepper(store[t.key],0,30,v=>{store[t.key]=v;calcUpdate();}).el);
+      wrap.appendChild(row);
     });
+    return wrap;
+  };
+  box.appendChild(mk('Lagt ned på bordet (plus)',calcLaid));
+  box.appendChild(mk('På hånden (minus)',calcHand));
+  $('rm-calc').classList.remove('hidden');calcUpdate();
+}
+function calcSum(store){return CARD_TYPES.reduce((a,t)=>a+store[t.key]*t.val,0);}
+function calcUpdate(){
+  const laid=calcSum(calcLaid),hand=calcSum(calcHand),net=laid-hand;
+  $('rm-calc-result').className='warn';
+  $('rm-calc-result').innerHTML=`Nedlagt <b>${laid}</b> − hånd <b>${hand}</b> = <b style="color:var(--gold)">${net>0?'+':''}${net}</b>`;
+}
+$('rm-calc-apply').onclick=()=>{const net=calcSum(calcLaid)-calcSum(calcHand);if(calcCb)calcCb(net);$('rm-calc').classList.add('hidden');};
+$('rm-calc-close').onclick=()=>$('rm-calc').classList.add('hidden');
+
+/* ---------- INSTALL / PWA ---------- */
+(function(){
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').catch(()=>{});});
   }
-
-  const bar=document.getElementById('installBar');
-  const txt=document.getElementById('installTxt');
-  const btn=document.getElementById('installBtn');
-  const closeBtn=document.getElementById('installClose');
-
-  // Already running as installed app? Don't show.
-  const standalone = window.matchMedia('(display-mode: standalone)').matches
-    || window.navigator.standalone === true;
-  if(standalone) return;
-
-  // Dismissed before?
-  if(localStorage.getItem('installDismissed')==='1') return;
-
-  const ua = navigator.userAgent;
-  const isIOS = /iphone|ipad|ipod/i.test(ua);
-  let deferredPrompt = null;
-
-  closeBtn.onclick=()=>{
-    bar.classList.add('hidden');
-    try{localStorage.setItem('installDismissed','1');}catch(e){}
-  };
-
-  // Android/Chrome: real install prompt
+  const bar=$('installBar'),txt=$('installTxt'),btn=$('installBtn'),closeBtn=$('installClose');
+  const standalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+  if(standalone)return;
+  if(localStorage.getItem('installDismissed')==='1')return;
+  const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  let deferred=null;
+  closeBtn.onclick=()=>{bar.classList.add('hidden');try{localStorage.setItem('installDismissed','1');}catch(e){}};
   window.addEventListener('beforeinstallprompt',e=>{
-    e.preventDefault();
-    deferredPrompt=e;
-    txt.innerHTML='Læg <b>Spasser Vest</b> på hjemmeskærmen for hurtig adgang.';
-    btn.style.display='inline-block';
-    bar.classList.remove('hidden');
+    e.preventDefault();deferred=e;
+    txt.innerHTML='Læg <b>Kortspil</b> på hjemmeskærmen for hurtig adgang.';
+    btn.style.display='inline-block';bar.classList.remove('hidden');
   });
-  btn.onclick=async()=>{
-    if(!deferredPrompt)return;
-    deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-    deferredPrompt=null;
-    bar.classList.add('hidden');
-  };
-
-  // iOS: show manual instructions (no install API exists)
+  btn.onclick=async()=>{if(!deferred)return;deferred.prompt();await deferred.userChoice;deferred=null;bar.classList.add('hidden');};
   if(isIOS){
-    txt.innerHTML='Installér: tryk <span class="share" style="color:var(--gold)">Del-ikonet ⬆</span> nederst og vælg <b>“Føj til hjemmeskærm”</b>.';
-    btn.style.display='none';
-    bar.classList.remove('hidden');
+    txt.innerHTML='Installér: tryk <span style="color:var(--gold)">Del-ikonet ⬆</span> nederst og vælg <b>“Føj til hjemmeskærm”</b>.';
+    btn.style.display='none';bar.classList.remove('hidden');
   }
 })();
 
 /* ---------- BOOT ---------- */
-function boot(){
-  renderPlayers();
-  document.getElementById('startCards').value=state.startCards;
-  if(state.started){
-    if(state.roundIdx>=state.cardSeq.length && state.cardSeq.length){
-      showGame();finishGame();
-    }else{
-      showGame();
-    }
-  }
-}
-boot();
+show(app.screen||'menu');
 </script>
 </body>
 </html>
