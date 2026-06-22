@@ -112,6 +112,7 @@
 
 <script>
 const $=id=>document.getElementById(id);
+function saveHigh(key,value,lower){try{const hs=JSON.parse(localStorage.getItem('spil_highscores'))||{};const cur=hs[key];if(cur===undefined||(lower?value<cur:value>cur)){hs[key]=value;localStorage.setItem('spil_highscores',JSON.stringify(hs));}}catch(e){}}
 const REMOVE={let:40,mellem:48,svaer:52,ekspert:56};
 let diff='let';
 let solution, puzzle, given, notes, sel=-1, pencilMode=false, errors=0, time=0, timer=null;
@@ -178,19 +179,52 @@ function generate(removeCount){
 
 /* ---------- game ---------- */
 function newGame(){
+  localStorage.removeItem('sudoku_save');
   $('overlay').classList.remove('show');
   toast('Laver puslespil…');
   // generate async so toast shows
   setTimeout(()=>{
     generate(REMOVE[diff]);
     sel=-1;errors=0;time=0;$('errs').textContent='0 fejl';
-    clearInterval(timer);timer=setInterval(()=>{time++;$('time').textContent=fmt(time);},1000);
+    startTimer();
     $('time').textContent='0:00';
-    render();
+    render();saveGame();
     document.querySelector('.toast').classList.remove('show');
   },30);
 }
+function resumeGame(){
+  $('overlay').classList.remove('show');
+  sel=-1;
+  // sync difficulty buttons
+  document.querySelectorAll('.diffs .btn').forEach(x=>x.classList.toggle('active',x.dataset.diff===diff));
+  $('errs').textContent=errors+' fejl';$('time').textContent=fmt(time);
+  startTimer();render();
+}
 function fmt(s){return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
+
+function saveGame(){
+  try{
+    if(!puzzle||!solution)return;
+    localStorage.setItem('sudoku_save',JSON.stringify({
+      solution,puzzle,given,
+      notes:notes.map(s=>[...s]),
+      diff,time,errors
+    }));
+  }catch(e){}
+}
+function loadGame(){
+  try{
+    const s=JSON.parse(localStorage.getItem('sudoku_save'));
+    if(!s||!s.puzzle||!s.solution)return false;
+    // already solved? don't resume
+    if(s.puzzle.every((v,i)=>v===s.solution[i]))return false;
+    solution=s.solution;puzzle=s.puzzle;given=s.given;
+    notes=s.notes.map(a=>new Set(a));
+    diff=s.diff||'let';time=s.time||0;errors=s.errors||0;
+    return true;
+  }catch(e){return false;}
+}
+function startTimer(){clearInterval(timer);timer=setInterval(()=>{time++;$('time').textContent=fmt(time);saveGame();},1000);}
 
 function render(){
   const g=$('grid');g.innerHTML='';
@@ -232,11 +266,13 @@ function place(v){
       if(rowOf(k)===rowOf(sel)||colOf(k)===colOf(sel)||boxOf(k)===boxOf(sel))notes[k].delete(v);
     }
   }
-  render();checkWin();
+  render();checkWin();saveGame();
 }
 function checkWin(){
   for(let i=0;i<81;i++)if(puzzle[i]!==solution[i])return;
   clearInterval(timer);
+  localStorage.removeItem('sudoku_save');
+  saveHigh('sudoku_'+diff,time,true);
   $('ovText').textContent=`${fmt(time)} · ${errors} fejl`;
   $('overlay').classList.add('show');
 }
@@ -249,7 +285,7 @@ function hint(){
     sel=target;
   }
   puzzle[sel]=solution[sel];notes[sel].clear();
-  render();checkWin();
+  render();checkWin();saveGame();
   toast('Felt afsløret');
 }
 
@@ -288,7 +324,7 @@ document.addEventListener('keydown',e=>{
 });
 
 buildPad();
-newGame();
+if(loadGame())resumeGame();else newGame();
 </script>
 </body>
 </html>

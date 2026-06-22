@@ -163,6 +163,14 @@
       </span>
       <span class="arrow">›</span>
     </button>
+    <button class="game-card" id="scoresCard">
+      <span class="emoji">🏆</span>
+      <span class="gc-body">
+        <span class="gc-title">Rekorder</span>
+        <span class="gc-desc" id="scoresDesc">Dine bedste resultater i alle spil.</span>
+      </span>
+      <span class="arrow">›</span>
+    </button>
 
     <div class="cat-head">Kortspil</div>
     <button class="game-card" data-game="spasser">
@@ -324,6 +332,62 @@
       <span class="gc-body">
         <span class="gc-title">Byg tårn</span>
         <span class="gc-desc">Stak etager så højt du kan. Timing er alt.</span>
+      </span>
+      <span class="arrow">›</span>
+    </a>
+    <a class="game-card" href="hop.html" style="text-decoration:none;">
+      <span class="emoji">🏃</span>
+      <span class="gc-body">
+        <span class="gc-title">Hop</span>
+        <span class="gc-desc">Platformspil — løb, hop, saml mønter og nå målet. Baner gemmes.</span>
+      </span>
+      <span class="arrow">›</span>
+    </a>
+    <a class="game-card" href="transport.html" style="text-decoration:none;">
+      <span class="emoji">🚚</span>
+      <span class="gc-body">
+        <span class="gc-title">Transport</span>
+        <span class="gc-desc">Byg ruter mellem byer, køb lastbiler og tjen penge på fragt.</span>
+      </span>
+      <span class="arrow">›</span>
+    </a>
+    <a class="game-card" href="lys-ud.html" style="text-decoration:none;">
+      <span class="emoji">💡</span>
+      <span class="gc-body">
+        <span class="gc-title">Lys ud</span>
+        <span class="gc-desc">Sluk alle lys. Hvert tryk skifter feltet og naboerne.</span>
+      </span>
+      <span class="arrow">›</span>
+    </a>
+    <a class="game-card" href="simon.html" style="text-decoration:none;">
+      <span class="emoji">🎵</span>
+      <span class="gc-body">
+        <span class="gc-title">Simon</span>
+        <span class="gc-desc">Husk og gentag mønstret af lys og lyde.</span>
+      </span>
+      <span class="arrow">›</span>
+    </a>
+    <a class="game-card" href="murbraek.html" style="text-decoration:none;">
+      <span class="emoji">🧱</span>
+      <span class="gc-body">
+        <span class="gc-title">Murbræk</span>
+        <span class="gc-desc">Styr pladen, send bolden op og knus alle klodser.</span>
+      </span>
+      <span class="arrow">›</span>
+    </a>
+    <a class="game-card" href="ordspil.html" style="text-decoration:none;">
+      <span class="emoji">🔤</span>
+      <span class="gc-body">
+        <span class="gc-title">Ordspil</span>
+        <span class="gc-desc">Gæt det danske ord på fem bogstaver på seks forsøg.</span>
+      </span>
+      <span class="arrow">›</span>
+    </a>
+    <a class="game-card" href="nonogram.html" style="text-decoration:none;">
+      <span class="emoji">⬛</span>
+      <span class="gc-body">
+        <span class="gc-title">Nonogram</span>
+        <span class="gc-desc">Løs billedgåden ud fra tallene. Tre størrelser.</span>
       </span>
       <span class="arrow">›</span>
     </a>
@@ -715,6 +779,16 @@
     </div>
   </section>
 
+  <!-- ============ REKORDER ============ -->
+  <section id="scores" class="hidden">
+    <div class="panel">
+      <label>Dine rekorder</label>
+      <div id="sc-list"></div>
+      <p id="sc-empty" style="font-size:14px;color:var(--gold-dim);text-align:center;padding:14px 0;">Ingen rekorder endnu. Spil et spil for at sætte din første!</p>
+      <button class="btn" id="sc-reset" style="margin-top:12px;">Nulstil alle rekorder</button>
+    </div>
+  </section>
+
 </div>
 
 <!-- player editor modal -->
@@ -803,8 +877,9 @@ function show(screen){
   $('majer').classList.toggle('hidden',screen!=='majer');
   $('loegn').classList.toggle('hidden',screen!=='loegn');
   $('players').classList.toggle('hidden',screen!=='players');
+  $('scores').classList.toggle('hidden',screen!=='scores');
   $('homeBtn').classList.toggle('hidden',screen==='menu');
-  if(screen==='menu'){$('appTitle').textContent='Spil';$('appSub').textContent='Vælg et spil';updPlayersDesc();}
+  if(screen==='menu'){$('appTitle').textContent='Spil';$('appSub').textContent='Vælg et spil';updPlayersDesc();updScoresDesc();}
   if(screen==='spasser'){$('appTitle').textContent='Spasser Vest';$('appSub').textContent='Meld dine stik';svRender();}
   if(screen==='rummy'){$('appTitle').textContent='500 Rummy';$('appSub').textContent='Først til 500';rmRender();}
   if(screen==='enogtredive'){$('appTitle').textContent='31';$('appSub').textContent='Regler';}
@@ -812,6 +887,7 @@ function show(screen){
   if(screen==='majer'){$('appTitle').textContent='Majer';$('appSub').textContent='Regler';}
   if(screen==='loegn'){$('appTitle').textContent='Løgn';$('appSub').textContent='Regler';}
   if(screen==='players'){$('appTitle').textContent='Mine spillere';$('appSub').textContent='Huskes på din telefon';plRender();}
+  if(screen==='scores'){$('appTitle').textContent='Rekorder';$('appSub').textContent='Dine bedste resultater';scRender();}
 }
 document.querySelectorAll('.game-card').forEach(c=>{c.onclick=()=>show(c.dataset.game);});
 $('homeBtn').onclick=()=>show('menu');
@@ -1211,12 +1287,78 @@ $('pl-ed-delete').onclick=()=>{
   if(confirm('Slet denne spiller?')){players.splice(plEditIdx,1);savePlayers();plRender();$('pl-editor').classList.add('hidden');}
 };
 
+/* ============================================================
+   REKORDER (shared highscores read from each game)
+   Each game writes window.localStorage 'spil_highscores' = { gameKey: {label, value, unit, lower} , ... }
+   We also read legacy keys (2048best, snakeBest, towerBest) for back-compat.
+   ============================================================ */
+function loadScores(){try{return JSON.parse(localStorage.getItem('spil_highscores'))||{};}catch(e){return {};}}
+// Definition of games that can show a record, with how to read/format
+const SC_GAMES=[
+  {key:'2048',icon:'🔢',name:'2048',legacy:'2048best',unit:'point',lower:false},
+  {key:'tetris',icon:'🟦',name:'Tetris',unit:'point',lower:false},
+  {key:'slange',icon:'🐍',name:'Slange',legacy:'snakeBest',unit:'point',lower:false},
+  {key:'bygtaarn',icon:'🏗️',name:'Byg tårn',legacy:'towerBest',unit:'etager',lower:false},
+  {key:'yatzy',icon:'🎲',name:'Yatzy',unit:'point',lower:false},
+  {key:'sudoku_let',icon:'🔢',name:'Sudoku · Let',unit:'tid',lower:true,time:true},
+  {key:'sudoku_mellem',icon:'🔢',name:'Sudoku · Mellem',unit:'tid',lower:true,time:true},
+  {key:'sudoku_svaer',icon:'🔢',name:'Sudoku · Svær',unit:'tid',lower:true,time:true},
+  {key:'sudoku_ekspert',icon:'🔢',name:'Sudoku · Ekspert',unit:'tid',lower:true,time:true},
+  {key:'mine_let',icon:'💣',name:'Minestryger · Let',unit:'tid',lower:true,time:true},
+  {key:'mine_mellem',icon:'💣',name:'Minestryger · Mellem',unit:'tid',lower:true,time:true},
+  {key:'mine_svaer',icon:'💣',name:'Minestryger · Svær',unit:'tid',lower:true,time:true},
+  {key:'kabale',icon:'🂡',name:'Kabale',unit:'tid',lower:true,time:true},
+  {key:'edderkop',icon:'🕷️',name:'Edderkop',unit:'træk',lower:true},
+  {key:'freecell',icon:'🆓',name:'FreeCell',unit:'træk',lower:true},
+  {key:'transport',icon:'🚚',name:'Transport',unit:'måneder',lower:false},
+  {key:'simon',icon:'🎵',name:'Simon',unit:'runder',lower:false},
+  {key:'murbraek',icon:'🧱',name:'Murbræk',unit:'point',lower:false},
+  {key:'ordspil',icon:'🔤',name:'Ordspil',unit:'forsøg',lower:true},
+];
+function fmtScoreTime(s){const m=Math.floor(s/60);return m+':'+String(Math.floor(s%60)).padStart(2,'0');}
+function getRecord(g){
+  const hs=loadScores();
+  let v=hs[g.key];
+  if(v===undefined&&g.legacy){const lv=+(localStorage.getItem(g.legacy));if(lv)v=lv;}
+  if(v===undefined||v===null||v==='')return null;
+  return v;
+}
+function anyScores(){return SC_GAMES.some(g=>getRecord(g)!==null);}
+function updScoresDesc(){const d=$('scoresDesc');if(!d)return;d.textContent=anyScores()?'Dine bedste resultater i alle spil.':'Endnu ingen rekorder — spil for at sætte din første.';}
+function scRender(){
+  const box=$('sc-list');box.innerHTML='';
+  let any=false;
+  SC_GAMES.forEach(g=>{
+    const v=getRecord(g);if(v===null)return;
+    any=true;
+    const val=g.time?fmtScoreTime(v):v+' '+g.unit;
+    const row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:10px;padding:9px 2px;border-bottom:1px solid var(--felt-line);';
+    row.innerHTML=`<span style="font-size:22px;width:30px;text-align:center;">${g.icon}</span>
+      <span style="flex:1;color:var(--cream);">${g.name}</span>
+      <span style="color:var(--gold);font-weight:bold;">${val}</span>`;
+    box.appendChild(row);
+  });
+  $('sc-empty').style.display=any?'none':'block';
+}
+$('scoresCard').onclick=()=>show('scores');
+$('sc-reset').onclick=()=>{
+  if(confirm('Nulstil ALLE rekorder? Dette kan ikke fortrydes.')){
+    localStorage.removeItem('spil_highscores');
+    ['2048best','snakeBest','towerBest'].forEach(k=>localStorage.removeItem(k));
+    scRender();updScoresDesc();
+  }
+};
+
 /* ---------- BOOT ---------- */
 // Always start on the menu (games keep their saved state and resume when opened)
 show('menu');
+// Safety: make sure no modal is stuck open on load
+var _ple=$('pl-editor'); if(_ple) _ple.classList.add('hidden');
+var _rmc=$('rm-calc'); if(_rmc) _rmc.classList.add('hidden');
 // If the page is restored from back/forward cache (e.g. returning from Kabale),
 // reset to the menu instead of showing the last in-app screen.
-window.addEventListener('pageshow',()=>{show('menu');});
+window.addEventListener('pageshow',()=>{show('menu');var e=$('pl-editor');if(e)e.classList.add('hidden');});
 </script>
 </body>
 </html>

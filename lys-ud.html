@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a3d2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lys ud">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a3d2e'/%3E%3Crect x='14' y='14' width='14' height='14' rx='3' fill='%23e8c468'/%3E%3Crect x='36' y='14' width='14' height='14' rx='3' fill='%23123'/%3E%3Crect x='14' y='36' width='14' height='14' rx='3' fill='%23123'/%3E%3Crect x='36' y='36' width='14' height='14' rx='3' fill='%23e8c468'/%3E%3C/svg%3E">
+<title>Lys ud</title>
+<style>
+  :root{--felt:#0a3d2e;--felt-2:#0d4a37;--felt-line:#10573f;--gold:#e8c468;--gold-dim:#b89640;--cream:#f3ead6;--ink:#0a2018;--on:#e8c468;--off:#0a2a20;--shadow:rgba(0,0,0,.4);}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;}
+  html,body{margin:0;padding:0;}
+  body{font-family:"Georgia",serif;background:radial-gradient(ellipse at 50% 0%, var(--felt-2), var(--felt) 75%);color:var(--cream);min-height:100vh;min-height:100dvh;padding:env(safe-area-inset-top) 12px 16px;}
+  .wrap{max-width:420px;margin:0 auto;}
+  .topbar{display:flex;align-items:center;gap:10px;padding:10px 2px 6px;}
+  .topbar h1{flex:1;font-size:20px;margin:0;color:var(--gold);font-variant:small-caps;letter-spacing:1px;}
+  .topbar .stat{font-size:14px;color:var(--gold-dim);}
+  .btn{font-family:inherit;font-size:14px;border:1px solid var(--felt-line);border-radius:9px;padding:8px 11px;cursor:pointer;background:transparent;color:var(--gold);}
+  .btn.solid{background:var(--gold);color:var(--ink);border:none;font-weight:bold;}
+  .btn:active{transform:translateY(1px);}
+  a.btn{text-decoration:none;display:inline-block;}
+  .diffs{display:flex;gap:6px;margin:6px 0;}
+  .diffs .btn{flex:1;text-align:center;font-size:13px;}
+  .diffs .btn.active{background:var(--gold-dim);color:var(--ink);border-color:var(--gold-dim);}
+  .grid{display:grid;gap:8px;margin-top:14px;}
+  .cell{aspect-ratio:1;border-radius:12px;cursor:pointer;border:1px solid var(--felt-line);transition:background .12s;}
+  .cell.on{background:radial-gradient(circle at 40% 35%,#f4dd96,var(--on));box-shadow:0 0 12px rgba(232,196,104,.5);}
+  .cell.off{background:var(--off);}
+  .hint{text-align:center;font-size:13px;color:var(--gold-dim);margin-top:14px;}
+  .controls{margin-top:14px;display:flex;gap:8px;}
+  .controls .btn{flex:1;text-align:center;}
+  .overlay{position:fixed;inset:0;background:rgba(5,25,18,.92);z-index:80;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;}
+  .overlay.show{display:flex;}
+  .overlay h2{font-size:30px;margin:0 0 8px;color:var(--gold);font-variant:small-caps;}
+  .overlay p{margin:0 0 18px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="btn" href="index.html">‹ Menu</a>
+    <h1>Lys ud</h1>
+    <div class="stat" id="moves">0 træk</div>
+  </div>
+  <div class="diffs">
+    <button class="btn active" data-n="3">3×3</button>
+    <button class="btn" data-n="4">4×4</button>
+    <button class="btn" data-n="5">5×5</button>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="hint">Tryk på et felt — det og naboerne skifter. Sluk alle lys.</div>
+  <div class="controls"><button class="btn solid" id="newBtn" style="flex:1;padding:12px;">Nyt puslespil</button></div>
+</div>
+<div class="overlay" id="overlay"><h2>Alle lys slukket! 🎉</h2><p id="ovText"></p><button class="btn solid" id="ovNew" style="font-size:17px;padding:13px 22px;">Igen</button></div>
+
+<script>
+const $=id=>document.getElementById(id);
+let N=3,grid,moves,solved;
+function idx(r,c){return r*N+c;}
+function newGame(){
+  $('overlay').classList.remove('show');
+  grid=Array(N*N).fill(false);moves=0;solved=false;
+  // generate solvable: start all off, apply random presses
+  const presses=N*N;
+  for(let k=0;k<presses;k++){const r=Math.floor(Math.random()*N),c=Math.floor(Math.random()*N);applyPress(r,c);}
+  // if accidentally all off, press one
+  if(grid.every(x=>!x))applyPress(0,0);
+  moves=0;
+  $('grid').style.gridTemplateColumns=`repeat(${N},1fr)`;
+  render();updMoves();
+}
+function applyPress(r,c){
+  const toggle=(rr,cc)=>{if(rr>=0&&rr<N&&cc>=0&&cc<N)grid[idx(rr,cc)]=!grid[idx(rr,cc)];};
+  toggle(r,c);toggle(r-1,c);toggle(r+1,c);toggle(r,c-1);toggle(r,c+1);
+}
+function render(){
+  const g=$('grid');g.innerHTML='';
+  for(let r=0;r<N;r++)for(let c=0;c<N;c++){
+    const cell=document.createElement('div');
+    cell.className='cell '+(grid[idx(r,c)]?'on':'off');
+    cell.onclick=()=>press(r,c);
+    g.appendChild(cell);
+  }
+}
+function press(r,c){
+  if(solved)return;
+  applyPress(r,c);moves++;updMoves();render();
+  if(grid.every(x=>!x)){solved=true;$('ovText').textContent=`Klaret på ${moves} træk`;$('overlay').classList.add('show');}
+}
+function updMoves(){$('moves').textContent=moves+' træk';}
+document.querySelectorAll('.diffs .btn').forEach(b=>b.onclick=()=>{document.querySelectorAll('.diffs .btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');N=+b.dataset.n;newGame();});
+$('newBtn').onclick=newGame;$('ovNew').onclick=newGame;
+newGame();
+</script>
+</body>
+</html>

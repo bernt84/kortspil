@@ -112,6 +112,7 @@
 
 <script>
 const $=id=>document.getElementById(id);
+function saveHigh(key,value,lower){try{const hs=JSON.parse(localStorage.getItem('spil_highscores'))||{};const cur=hs[key];if(cur===undefined||(lower?value<cur:value>cur)){hs[key]=value;localStorage.setItem('spil_highscores',JSON.stringify(hs));}}catch(e){}}
 const DIFFS={
   let:{r:9,c:9,m:10},
   mellem:{r:16,c:12,m:30},
@@ -119,7 +120,33 @@ const DIFFS={
 };
 let diff='let', grid, rows, cols, mines, opened, flags, started, dead, won, timer, time, flagMode=false;
 
-function init(){
+function saveGame(){
+  try{
+    if(dead||won||!started){localStorage.removeItem('mine_save');return;}
+    localStorage.setItem('mine_save',JSON.stringify({diff,rows,cols,mines,grid,opened,flags,time,started}));
+  }catch(e){}
+}
+function loadGame(){
+  try{
+    const s=JSON.parse(localStorage.getItem('mine_save'));
+    if(!s||!s.grid||!s.started)return false;
+    diff=s.diff;rows=s.rows;cols=s.cols;mines=s.mines;grid=s.grid;
+    opened=s.opened;flags=s.flags;time=s.time;started=true;dead=false;won=false;
+    return true;
+  }catch(e){return false;}
+}
+
+function init(resume){
+  if(resume&&loadGame()){
+    document.querySelectorAll('.diffs .btn').forEach(x=>x.classList.toggle('active',x.dataset.diff===diff));
+    clearInterval(timer);$('time').textContent=time;$('face').textContent='🙂';$('mineCount').textContent=mines-flags;
+    const wrap=document.querySelector('.board-wrap');
+    const avail=Math.min(wrap.clientWidth||540,540)-4;
+    const cs=Math.max(22,Math.floor((avail-(cols-1)*2)/cols));
+    const g=$('grid');g.style.setProperty('--cs',cs+'px');g.style.gridTemplateColumns=`repeat(${cols},${cs}px)`;
+    timer=setInterval(()=>{time++;$('time').textContent=time;saveGame();},1000);
+    render();return;
+  }
   const d=DIFFS[diff];rows=d.r;cols=d.c;mines=d.m;
   grid=[];opened=0;flags=0;started=false;dead=false;won=false;time=0;
   clearInterval(timer);$('time').textContent='0';$('face').textContent='🙂';
@@ -154,7 +181,7 @@ function plantMines(sr,sc){
     grid[r][c].n=n;
   }
 }
-function startTimer(){started=true;timer=setInterval(()=>{time++;$('time').textContent=time;},1000);}
+function startTimer(){started=true;timer=setInterval(()=>{time++;$('time').textContent=time;saveGame();},1000);}
 
 function open(r,c){
   const cell=grid[r][c];
@@ -162,11 +189,13 @@ function open(r,c){
   if(!started){plantMines(r,c);startTimer();}
   if(cell.mine){
     cell.open=true;dead=true;clearInterval(timer);
+    localStorage.removeItem('mine_save');
     revealMines(r,c);$('face').textContent='💥';render();
     endGame(false);return;
   }
   flood(r,c);
   render();
+  saveGame();
   checkWin();
 }
 function flood(r,c){
@@ -185,7 +214,7 @@ function toggleFlag(r,c){
   if(cell.open||dead||won)return;
   cell.flag=!cell.flag;flags+=cell.flag?1:-1;
   $('mineCount').textContent=mines-flags;
-  render();
+  render();saveGame();
 }
 function revealMines(br,bc){
   for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
@@ -197,6 +226,8 @@ function revealMines(br,bc){
 function checkWin(){
   if(opened===rows*cols-mines){
     won=true;clearInterval(timer);$('face').textContent='😎';
+    localStorage.removeItem('mine_save');
+    saveHigh('mine_'+diff,time,true);
     // auto-flag remaining
     for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)if(grid[r][c].mine)grid[r][c].flag=true;
     $('mineCount').textContent='0';render();endGame(true);
@@ -245,16 +276,16 @@ function bindCell(el,r,c){
 document.querySelectorAll('.diffs .btn').forEach(b=>{
   b.onclick=()=>{
     document.querySelectorAll('.diffs .btn').forEach(x=>x.classList.remove('active'));
-    b.classList.add('active');diff=b.dataset.diff;$('overlay').classList.remove('show');init();
+    b.classList.add('active');diff=b.dataset.diff;$('overlay').classList.remove('show');localStorage.removeItem('mine_save');init(false);
   };
 });
 $('modeDig').onclick=()=>{flagMode=false;$('modeDig').classList.add('active');$('modeFlag').classList.remove('active');};
 $('modeFlag').onclick=()=>{flagMode=true;$('modeFlag').classList.add('active');$('modeDig').classList.remove('active');};
-$('face').onclick=()=>{$('overlay').classList.remove('show');init();};
-$('ovNew').onclick=()=>{$('overlay').classList.remove('show');init();};
-window.addEventListener('resize',()=>{if(grid)init();});
+$('face').onclick=()=>{$('overlay').classList.remove('show');localStorage.removeItem('mine_save');init(false);};
+$('ovNew').onclick=()=>{$('overlay').classList.remove('show');localStorage.removeItem('mine_save');init(false);};
+window.addEventListener('resize',()=>{if(!grid)return;const wrap=document.querySelector('.board-wrap');const avail=Math.min(wrap.clientWidth||540,540)-4;const cs=Math.max(22,Math.floor((avail-(cols-1)*2)/cols));const g=$('grid');g.style.setProperty('--cs',cs+'px');g.style.gridTemplateColumns=`repeat(${cols},${cs}px)`;render();});
 
-init();
+init(true);
 </script>
 </body>
 </html>

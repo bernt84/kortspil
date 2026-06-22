@@ -70,10 +70,15 @@
 
 <script>
 const $=id=>document.getElementById(id);
+function saveHigh(key,value,lower){try{const hs=JSON.parse(localStorage.getItem('spil_highscores'))||{};const cur=hs[key];if(cur===undefined||(lower?value<cur:value>cur)){hs[key]=value;localStorage.setItem('spil_highscores',JSON.stringify(hs));}}catch(e){}}
+
 const SUITS=['♠','♥','♦','♣'];const RED=new Set(['♥','♦']);const RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 let state,history,moves,sel;
+function saveGame(){try{if(!state)return;if(state.foundations.reduce((a,p)=>a+p.length,0)===52){localStorage.removeItem('freecell_save');return;}localStorage.setItem('freecell_save',JSON.stringify({state,moves}));}catch(e){}}
+function loadGame(){try{const s=JSON.parse(localStorage.getItem('freecell_save'));if(!s||!s.state)return false;state=s.state;moves=s.moves||0;history=[];sel=null;render();return true;}catch(e){return false;}}
 function makeDeck(){const d=[];for(let s=0;s<4;s++)for(let r=0;r<13;r++)d.push({suit:SUITS[s],rank:r});for(let i=d.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]];}return d;}
 function deal(){
+  localStorage.removeItem('freecell_save');
   const deck=makeDeck();
   state={free:[null,null,null,null],foundations:[[],[],[],[]],tableau:[[],[],[],[],[],[],[],[]]};
   let i=0;for(const c of deck){state.tableau[i%8].push(c);i++;}
@@ -106,6 +111,7 @@ function render(){
     let y=0;pile.forEach((c,i)=>{const e=cardEl(c);e.style.top=y+'px';e.onclick=ev=>{ev.stopPropagation();tapCard('t'+t,i);};e.ondblclick=ev=>{ev.stopPropagation();if(i===pile.length-1)autoCard('t'+t,t,i);};if(sel&&sel.from==='t'+t&&i>=sel.idx)e.classList.add('sel');s.appendChild(e);y+=upOff;});
     s.style.minHeight=(y+colW*1.4)+'px';s.onclick=()=>tapT(t);}
   $('score').textContent=moves+' træk';
+  saveGame();
 }
 function getRun(t,idx){
   const pile=state.tableau[t];
@@ -139,12 +145,12 @@ function autoCollect(){let moved=true,any=false;while(moved){moved=false;
   const srcs=[];state.free.forEach((c,i)=>{if(c)srcs.push(['free',i,c]);});state.tableau.forEach((p,i)=>{if(p.length)srcs.push(['t',i,p[p.length-1]]);});
   for(const[type,ref,card]of srcs){for(let f=0;f<4;f++)if(canFound(card,f)){if(!any){snapshot();any=true;}if(type==='free')state.free[ref]=null;else state.tableau[ref].pop();state.foundations[f].push(card);moved=true;break;}if(moved)break;}}
   if(any){moves++;sel=null;render();win();}else toast('Ingen kort kan samles');}
-function win(){if(state.foundations.reduce((a,p)=>a+p.length,0)===52){$('ovText').textContent=moves+' træk';$('overlay').classList.add('show');}}
+function win(){if(state.foundations.reduce((a,p)=>a+p.length,0)===52){saveHigh('freecell',moves,true);$('ovText').textContent=moves+' træk';$('overlay').classList.add('show');}}
 let toastT;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1600);}
 $('newBtn').onclick=()=>{$('overlay').classList.remove('show');deal();};$('ovNew').onclick=()=>{$('overlay').classList.remove('show');deal();};
 $('undoBtn').onclick=undo;$('autoBtn').onclick=autoCollect;
 window.addEventListener('resize',()=>{if(state)render();});
-deal();
+if(!loadGame())deal();
 </script>
 </body>
 </html>

@@ -62,6 +62,8 @@
 
 <script>
 const $=id=>document.getElementById(id);
+function saveHigh(key,value,lower){try{const hs=JSON.parse(localStorage.getItem('spil_highscores'))||{};const cur=hs[key];if(cur===undefined||(lower?value<cur:value>cur)){hs[key]=value;localStorage.setItem('spil_highscores',JSON.stringify(hs));}}catch(e){}}
+
 const cv=$('cv'),ctx=cv.getContext('2d');
 const GRID=20;
 let cell,snake,dir,nextDir,food,score,speed=180,loop,dead,best=+(localStorage.getItem('snakeBest')||0);
@@ -91,7 +93,7 @@ function draw(){
   snake.forEach((s,i)=>{ctx.fillStyle=i===0?'#a8e8c0':'#74d39a';roundRect(s.x*cell+1,s.y*cell+1,cell-2,cell-2,4);ctx.fill();});
 }
 function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
-function gameOver(){dead=true;clearInterval(loop);if(score>best){best=score;localStorage.setItem('snakeBest',best);}$('ovText').textContent=`${score} point · bedste ${best}`;$('overlay').classList.add('show');}
+function gameOver(){dead=true;clearInterval(loop);if(score>best){best=score;localStorage.setItem('snakeBest',best);saveHigh('slange',best,false);}$('ovText').textContent=`${score} point · bedste ${best}`;$('overlay').classList.add('show');}
 
 function turn(nx,ny){if(dir.x===-nx&&dir.y===-ny)return;nextDir={x:nx,y:ny};}
 document.addEventListener('keydown',e=>{const m={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]}[e.key];if(m){e.preventDefault();turn(m[0],m[1]);}});

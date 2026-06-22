@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a3d2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Hop">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a3d2e'/%3E%3Ccircle cx='32' cy='28' r='12' fill='%23e8c468'/%3E%3Ccircle cx='28' cy='26' r='2' fill='%230a2018'/%3E%3Ccircle cx='36' cy='26' r='2' fill='%230a2018'/%3E%3Crect x='26' y='40' width='5' height='10' fill='%23e8c468'/%3E%3Crect x='33' y='40' width='5' height='10' fill='%23e8c468'/%3E%3C/svg%3E">
+<title>Hop</title>
+<style>
+  :root{--felt:#0a3d2e;--felt-2:#0d4a37;--felt-line:#10573f;--gold:#e8c468;--gold-dim:#b89640;--cream:#f3ead6;--ink:#0a2018;--red:#c0392b;--sky1:#1a5a7a;--sky2:#0c4a38;--shadow:rgba(0,0,0,.4);}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;touch-action:none;}
+  html,body{margin:0;padding:0;height:100%;overflow:hidden;}
+  body{font-family:"Georgia",serif;background:radial-gradient(ellipse at 50% 0%, var(--felt-2), var(--felt) 75%);color:var(--cream);height:100vh;height:100dvh;display:flex;flex-direction:column;padding:env(safe-area-inset-top) 6px calc(6px + env(safe-area-inset-bottom));}
+  .topbar{display:flex;align-items:center;gap:8px;max-width:760px;margin:0 auto;width:100%;padding:8px 2px 4px;}
+  .topbar h1{flex:1;font-size:18px;margin:0;color:var(--gold);font-variant:small-caps;letter-spacing:1px;}
+  .topbar .stat{font-size:13px;color:var(--gold-dim);}
+  .btn{font-family:inherit;font-size:13px;border:1px solid var(--felt-line);border-radius:9px;padding:7px 9px;cursor:pointer;background:transparent;color:var(--gold);}
+  .btn.solid{background:var(--gold);color:var(--ink);border:none;font-weight:bold;}
+  .btn:active{transform:translateY(1px);}
+  a.btn{text-decoration:none;display:inline-block;}
+  .stage{flex:1;max-width:760px;margin:4px auto 0;width:100%;position:relative;min-height:0;}
+  canvas{background:linear-gradient(180deg,#1a5a7a,#2a7a6a 60%,#0c4a38);border:2px solid var(--felt-line);border-radius:10px;display:block;width:100%;height:100%;box-shadow:0 6px 18px var(--shadow);}
+  /* touch controls */
+  .pad{position:absolute;bottom:10px;left:10px;display:flex;gap:10px;z-index:3;}
+  .pad button,.jump{width:62px;height:62px;border-radius:50%;border:2px solid rgba(232,196,104,.5);background:rgba(13,74,55,.7);color:var(--gold);font-size:26px;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .jump{position:absolute;bottom:10px;right:10px;z-index:3;background:rgba(232,196,104,.25);}
+  .pad button:active,.jump:active{background:rgba(232,196,104,.4);}
+  .levelsel{position:absolute;inset:0;background:rgba(5,25,18,.92);z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;}
+  .levelsel h2{color:var(--gold);font-variant:small-caps;font-size:26px;margin:0 0 14px;}
+  .levels{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:340px;width:100%;}
+  .lvlbtn{aspect-ratio:1;border-radius:12px;border:1px solid var(--felt-line);background:var(--felt-2);color:var(--cream);font-family:inherit;font-size:20px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .lvlbtn.locked{opacity:.4;}
+  .lvlbtn.done{border-color:var(--gold);color:var(--gold);}
+  .lvlbtn .star{font-size:11px;}
+  .overlay{position:absolute;inset:0;background:rgba(5,25,18,.9);z-index:12;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;}
+  .overlay.show{display:flex;}
+  .overlay h2{font-size:28px;margin:0 0 8px;color:var(--gold);font-variant:small-caps;}
+  .overlay.lose h2{color:var(--red);}
+  .overlay p{margin:0 0 16px;}
+  .hint{position:absolute;top:8px;left:50%;transform:translateX(-50%);font-size:12px;color:rgba(243,234,214,.6);z-index:3;}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="btn" href="index.html">‹ Menu</a>
+  <h1>Hop</h1>
+  <div class="stat"><span id="coins">🪙 0</span> · <span id="lvlLabel">Bane 1</span></div>
+</div>
+<div class="stage">
+  <canvas id="cv"></canvas>
+  <div class="hint" id="hint"></div>
+  <div class="pad">
+    <button id="leftBtn">◀</button>
+    <button id="rightBtn">▶</button>
+  </div>
+  <button class="jump" id="jumpBtn">⤒</button>
+
+  <div class="levelsel" id="levelsel">
+    <h2>Vælg bane</h2>
+    <div class="levels" id="levels"></div>
+    <button class="btn" id="resetProgress" style="margin-top:16px;">Nulstil fremskridt</button>
+  </div>
+  <div class="overlay" id="overlay">
+    <h2 id="ovTitle"></h2>
+    <p id="ovText"></p>
+    <div style="display:flex;gap:8px;">
+      <button class="btn" id="ovMenu">Baner</button>
+      <button class="btn solid" id="ovNext" style="font-size:16px;padding:11px 18px;">Igen</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const cv=$('cv'),ctx=cv.getContext('2d');
+let W,H,scale;
+const TILE=32; // world units
+// Level definitions: each is a grid of strings. X=ground, =empty, C=coin, E=enemy, P=player start, G=goal, ^=spike
+const LEVELS=[
+[
+"                                ",
+"                                ",
+"                          CC    ",
+"                       XXXXXXX  ",
+"           CC                   ",
+"         XXXXXX        C        ",
+"  P     C           XXXX     G  ",
+"XXXXXX XXX  E   ^^  X   X  XXXXX",
+"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+],
+[
+"                                   ",
+"     CC             E       CC     ",
+"   XXXXXX     CC         XXXXXXX   ",
+"            XXXXX                  ",
+"  P                  ^^^       G   ",
+"XXXXX     XXX   E   XXXXX   XXXXXXX",
+"XXXXXX ^^ XXXXXXXXXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+],
+[
+"                                         ",
+"          C        C        C            ",
+"        XXXX     XXXX     XXXX      G    ",
+"   P                            XXXXXX   ",
+"  XXX    E    ^^    E    ^^    E         ",
+"XXXXXX XXXXX XXXXX XXXX XXXXX XXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+],
+];
+
+let progress=loadProgress();
+function loadProgress(){try{return JSON.parse(localStorage.getItem('hop_progress'))||{unlocked:1,done:[]};}catch(e){return {unlocked:1,done:[]};}}
+function saveProgress(){try{localStorage.setItem('hop_progress',JSON.stringify(progress));}catch(e){}}
+
+let level,player,cam,coins,enemies,spikes,solids,goal,levelIdx,totalCoins,gotCoins,won,dead,keys;
+
+function parseLevel(idx){
+  const map=LEVELS[idx];
+  solids=[];coins=[];enemies=[];spikes=[];goal=null;
+  let startX=64,startY=64;
+  for(let r=0;r<map.length;r++){
+    for(let c=0;c<map[r].length;c++){
+      const ch=map[r][c];const x=c*TILE,y=r*TILE;
+      if(ch==='X')solids.push({x,y,w:TILE,h:TILE});
+      else if(ch==='C')coins.push({x:x+TILE/2,y:y+TILE/2,got:false});
+      else if(ch==='E')enemies.push({x,y:y+4,w:TILE-6,h:TILE-6,vx:-0.6,alive:true,sx:x});
+      else if(ch==='^')spikes.push({x,y:y+TILE-12,w:TILE,h:12});
+      else if(ch==='G')goal={x:x+8,y:y-TILE,w:TILE-16,h:TILE*2};
+      else if(ch==='P'){startX=x;startY=y;}
+    }
+  }
+  player={x:startX,y:startY,w:22,h:28,vx:0,vy:0,onGround:false,face:1};
+  cam={x:0};
+  totalCoins=coins.length;gotCoins=0;won=false;dead=false;
+  levelWidth=map[0].length*TILE;levelHeight=map.length*TILE;
+}
+let levelWidth,levelHeight;
+
+function startLevel(idx){
+  levelIdx=idx;parseLevel(idx);
+  $('levelsel').style.display='none';$('overlay').classList.remove('show');
+  $('lvlLabel').textContent='Bane '+(idx+1);$('coins').textContent='🪙 0';
+  $('hint').textContent=idx===0?'◀ ▶ for at gå · ⤒ for at hoppe':'';
+  running=true;lastT=0;requestAnimationFrame(loop);
+}
+
+function resize(){
+  const st=document.querySelector('.stage');
+  cv.width=st.clientWidth;cv.height=st.clientHeight;
+  W=cv.width;H=cv.height;
+  scale=H/(8*TILE); // show ~8 tiles tall
+  if(level===undefined)draw&&draw();
+}
+
+keys={left:false,right:false,jump:false};
+function bindHold(btn,key){
+  const b=$(btn);
+  const on=e=>{e.preventDefault();keys[key]=true;};
+  const off=e=>{e.preventDefault();keys[key]=false;};
+  b.addEventListener('touchstart',on,{passive:false});b.addEventListener('touchend',off);b.addEventListener('touchcancel',off);
+  b.addEventListener('mousedown',on);b.addEventListener('mouseup',off);b.addEventListener('mouseleave',off);
+}
+bindHold('leftBtn','left');bindHold('rightBtn','right');bindHold('jumpBtn','jump');
+document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')keys.left=true;if(e.key==='ArrowRight')keys.right=true;if(e.key===' '||e.key==='ArrowUp'){keys.jump=true;e.preventDefault();}});
+document.addEventListener('keyup',e=>{if(e.key==='ArrowLeft')keys.left=false;if(e.key==='ArrowRight')keys.right=false;if(e.key===' '||e.key==='ArrowUp')keys.jump=false;});
+
+let running=false,lastT=0;
+function loop(ts){
+  if(!running)return;
+  const dt=Math.min(2.5,(ts-lastT)/16.67||1);lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+function rectsOverlap(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;}
+
+function update(dt){
+  const p=player;
+  const ACC=0.7,MAX=4.2,FRICTION=0.78,GRAV=0.5,JUMP=11;
+  if(keys.left){p.vx-=ACC*dt;p.face=-1;}
+  if(keys.right){p.vx+=ACC*dt;p.face=1;}
+  if(!keys.left&&!keys.right)p.vx*=FRICTION;
+  p.vx=Math.max(-MAX,Math.min(MAX,p.vx));
+  if(keys.jump&&p.onGround){p.vy=-JUMP;p.onGround=false;}
+  p.vy+=GRAV*dt;if(p.vy>14)p.vy=14;
+  // horizontal
+  p.x+=p.vx*dt;
+  for(const s of solids){if(rectsOverlap(p,s)){if(p.vx>0)p.x=s.x-p.w;else if(p.vx<0)p.x=s.x+s.w;p.vx=0;}}
+  // vertical
+  p.y+=p.vy*dt;p.onGround=false;
+  for(const s of solids){if(rectsOverlap(p,s)){if(p.vy>0){p.y=s.y-p.h;p.onGround=true;}else if(p.vy<0)p.y=s.y+s.h;p.vy=0;}}
+  // bounds
+  if(p.x<0)p.x=0;if(p.x+p.w>levelWidth)p.x=levelWidth-p.w;
+  if(p.y>levelHeight+200)return die();
+  // coins
+  for(const c of coins){if(!c.got&&Math.abs(p.x+p.w/2-c.x)<20&&Math.abs(p.y+p.h/2-c.y)<20){c.got=true;gotCoins++;$('coins').textContent='🪙 '+gotCoins;}}
+  // enemies
+  for(const e of enemies){
+    if(!e.alive)continue;
+    e.x+=e.vx*dt;
+    // patrol: turn at edges (simple: reverse every 90px from start)
+    if(Math.abs(e.x-e.sx)>90){e.vx*=-1;e.x+=e.vx*dt;}
+    // wall collision
+    for(const s of solids){if(rectsOverlap(e,s)){e.vx*=-1;e.x+=e.vx*2*dt;break;}}
+    if(rectsOverlap(p,e)){
+      if(p.vy>0&&p.y+p.h-e.y<16){e.alive=false;p.vy=-7;} // stomp
+      else return die();
+    }
+  }
+  // spikes
+  for(const s of spikes){if(rectsOverlap(p,s))return die();}
+  // goal
+  if(goal&&rectsOverlap(p,goal))return win();
+  // camera follows
+  cam.x=Math.max(0,Math.min(levelWidth-W/scale,p.x+p.w/2-W/scale/2));
+}
+function die(){
+  if(dead)return;dead=true;running=false;
+  $('ovTitle').textContent='Av!';$('ovText').textContent='Du faldt eller ramte en fjende.';
+  $('overlay').className='overlay lose show';$('ovNext').textContent='Prøv igen';
+  $('ovNext').onclick=()=>startLevel(levelIdx);
+}
+function win(){
+  if(won)return;won=true;running=false;
+  if(!progress.done.includes(levelIdx))progress.done.push(levelIdx);
+  if(levelIdx+1<LEVELS.length&&progress.unlocked<levelIdx+2)progress.unlocked=levelIdx+2;
+  saveProgress();
+  const allCoins=gotCoins===totalCoins;
+  $('ovTitle').textContent='Bane klaret! 🎉';
+  $('ovText').textContent=`${gotCoins}/${totalCoins} mønter${allCoins?' · alle!':''}`;
+  $('overlay').className='overlay show';
+  const hasNext=levelIdx+1<LEVELS.length;
+  $('ovNext').textContent=hasNext?'Næste bane':'Baner';
+  $('ovNext').onclick=()=>{if(hasNext)startLevel(levelIdx+1);else showLevels();};
+}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  ctx.save();
+  ctx.scale(scale,scale);
+  ctx.translate(-cam.x,0);
+  const vw=W/scale;
+  // ground/solids
+  for(const s of solids){
+    if(s.x+s.w<cam.x||s.x>cam.x+vw)continue;
+    ctx.fillStyle='#0c4a38';ctx.fillRect(s.x,s.y,s.w,s.h);
+    ctx.fillStyle='#15604a';ctx.fillRect(s.x,s.y,s.w,5);
+    ctx.fillStyle='rgba(0,0,0,.15)';ctx.fillRect(s.x,s.y+s.h-4,s.w,4);
+  }
+  // spikes
+  for(const s of spikes){ctx.fillStyle='#c0392b';for(let i=0;i<s.w;i+=8){ctx.beginPath();ctx.moveTo(s.x+i,s.y+s.h);ctx.lineTo(s.x+i+4,s.y);ctx.lineTo(s.x+i+8,s.y+s.h);ctx.fill();}}
+  // goal flag
+  if(goal){ctx.fillStyle='#e8c468';ctx.fillRect(goal.x+goal.w/2-2,goal.y,4,goal.h);ctx.beginPath();ctx.moveTo(goal.x+goal.w/2+2,goal.y);ctx.lineTo(goal.x+goal.w/2+22,goal.y+10);ctx.lineTo(goal.x+goal.w/2+2,goal.y+20);ctx.fillStyle='#74d39a';ctx.fill();}
+  // coins
+  for(const c of coins){if(c.got)continue;ctx.fillStyle='#e8c468';ctx.beginPath();ctx.arc(c.x,c.y,8,0,7);ctx.fill();ctx.fillStyle='#b89640';ctx.beginPath();ctx.arc(c.x,c.y,4,0,7);ctx.fill();}
+  // enemies
+  for(const e of enemies){if(!e.alive)continue;ctx.fillStyle='#c0392b';roundRect(e.x,e.y,e.w,e.h,6);ctx.fill();ctx.fillStyle='#fff';ctx.fillRect(e.x+5,e.y+7,5,5);ctx.fillRect(e.x+e.w-10,e.y+7,5,5);ctx.fillStyle='#000';ctx.fillRect(e.x+6+(e.vx<0?0:2),e.y+9,2,2);ctx.fillRect(e.x+e.w-9+(e.vx<0?0:2),e.y+9,2,2);}
+  // player
+  const p=player;
+  ctx.fillStyle='#e8c468';roundRect(p.x,p.y,p.w,p.h,7);ctx.fill();
+  ctx.fillStyle='#0a2018';
+  const ex=p.face>0?p.x+p.w-9:p.x+4;
+  ctx.fillRect(ex,p.y+7,4,4);ctx.fillRect(ex+(p.face>0?-7:7),p.y+7,4,4);
+  ctx.restore();
+}
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+
+function showLevels(){
+  running=false;
+  $('overlay').classList.remove('show');
+  $('levelsel').style.display='flex';
+  const box=$('levels');box.innerHTML='';
+  LEVELS.forEach((_,i)=>{
+    const unlocked=i<progress.unlocked;
+    const done=progress.done.includes(i);
+    const b=document.createElement('button');
+    b.className='lvlbtn'+(unlocked?'':' locked')+(done?' done':'');
+    b.innerHTML=`${i+1}<span class="star">${done?'★':unlocked?'':'🔒'}</span>`;
+    if(unlocked)b.onclick=()=>startLevel(i);
+    box.appendChild(b);
+  });
+}
+$('ovMenu').onclick=showLevels;
+$('resetProgress').onclick=()=>{if(confirm('Nulstil alt fremskridt?')){progress={unlocked:1,done:[]};saveProgress();showLevels();}};
+window.addEventListener('resize',resize);
+resize();showLevels();
+</script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a3d2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Murbræk">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a3d2e'/%3E%3Crect x='12' y='14' width='12' height='7' rx='1' fill='%2374d39a'/%3E%3Crect x='26' y='14' width='12' height='7' rx='1' fill='%23e8c468'/%3E%3Crect x='40' y='14' width='12' height='7' rx='1' fill='%23c0392b'/%3E%3Ccircle cx='32' cy='38' r='4' fill='%23f3ead6'/%3E%3Crect x='24' y='48' width='16' height='4' rx='2' fill='%23e8c468'/%3E%3C/svg%3E">
+<title>Murbræk</title>
+<style>
+  :root{--felt:#0a3d2e;--felt-2:#0d4a37;--felt-line:#10573f;--gold:#e8c468;--gold-dim:#b89640;--cream:#f3ead6;--ink:#0a2018;--shadow:rgba(0,0,0,.4);}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;touch-action:none;}
+  html,body{margin:0;padding:0;height:100%;overflow:hidden;}
+  body{font-family:"Georgia",serif;background:radial-gradient(ellipse at 50% 0%, var(--felt-2), var(--felt) 75%);color:var(--cream);height:100vh;height:100dvh;display:flex;flex-direction:column;padding:env(safe-area-inset-top) 8px calc(8px + env(safe-area-inset-bottom));}
+  .topbar{display:flex;align-items:center;gap:10px;max-width:480px;margin:0 auto;width:100%;padding:8px 2px 4px;}
+  .topbar h1{flex:1;font-size:18px;margin:0;color:var(--gold);font-variant:small-caps;letter-spacing:1px;}
+  .topbar .stat{font-size:13px;color:var(--gold-dim);}
+  .btn{font-family:inherit;font-size:13px;border:1px solid var(--felt-line);border-radius:9px;padding:7px 9px;cursor:pointer;background:transparent;color:var(--gold);}
+  .btn.solid{background:var(--gold);color:var(--ink);border:none;font-weight:bold;}
+  .btn:active{transform:translateY(1px);}
+  a.btn{text-decoration:none;display:inline-block;}
+  .stage{flex:1;max-width:480px;margin:6px auto 0;width:100%;position:relative;min-height:0;}
+  canvas{background:linear-gradient(180deg,#08251b,#0c3a2c);border:2px solid var(--felt-line);border-radius:10px;display:block;width:100%;height:100%;box-shadow:0 6px 18px var(--shadow);}
+  .hint{text-align:center;font-size:12px;color:var(--gold-dim);margin-top:6px;min-height:16px;}
+  .overlay{position:absolute;inset:0;background:rgba(5,25,18,.9);z-index:12;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;border-radius:10px;}
+  .overlay.show{display:flex;}
+  .overlay h2{font-size:28px;margin:0 0 8px;color:var(--gold);font-variant:small-caps;}
+  .overlay.lose h2{color:#e88;}
+  .overlay p{margin:0 0 16px;}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="btn" href="index.html">‹ Menu</a>
+  <h1>Murbræk</h1>
+  <div class="stat"><span id="score">0</span> · liv <span id="lives">3</span></div>
+</div>
+<div class="stage">
+  <canvas id="cv"></canvas>
+  <div class="overlay" id="overlay"><h2 id="ovTitle"></h2><p id="ovText"></p><button class="btn solid" id="ovNew" style="font-size:16px;padding:12px 20px;">Spil igen</button></div>
+</div>
+<div class="hint">Træk fingeren for at styre pladen</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const cv=$('cv'),ctx=cv.getContext('2d');
+function saveHigh(key,value,lower){try{const hs=JSON.parse(localStorage.getItem('spil_highscores'))||{};const cur=hs[key];if(cur===undefined||(lower?value<cur:value>cur)){hs[key]=value;localStorage.setItem('spil_highscores',JSON.stringify(hs));}}catch(e){}}
+let W,H,paddle,ball,bricks,score,lives,level,running,over,launched;
+const COLORS=['#c0392b','#e8a85f','#e8c468','#74d39a','#7fb7ff'];
+
+function resize(){const st=document.querySelector('.stage');cv.width=st.clientWidth;cv.height=st.clientHeight;W=cv.width;H=cv.height;if(paddle){paddle.y=H-30;paddle.w=Math.max(60,W*0.18);}draw&&draw();}
+function buildBricks(){
+  bricks=[];
+  const cols=7,rows=Math.min(5,2+level);
+  const pad=6,top=40;
+  const bw=(W-pad*(cols+1))/cols, bh=22;
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+    bricks.push({x:pad+c*(bw+pad),y:top+r*(bh+pad),w:bw,h:bh,color:COLORS[r%COLORS.length],alive:true});
+  }
+}
+function start(){
+  score=0;lives=3;level=1;over=false;
+  resetBallPaddle();buildBricks();
+  $('overlay').classList.remove('show');updHud();
+  running=true;lastT=0;requestAnimationFrame(loop);
+}
+function resetBallPaddle(){
+  paddle={x:W/2-40,y:H-30,w:Math.max(60,W*0.18),h:12};
+  ball={x:W/2,y:H-46,r:7,vx:0,vy:0,speed:Math.max(4,H*0.008)};
+  launched=false;
+}
+function nextLevel(){level++;resetBallPaddle();buildBricks();updHud();}
+function updHud(){$('score').textContent=score;$('lives').textContent=lives;}
+
+let lastT=0;
+function loop(ts){
+  if(over)return;
+  const dt=Math.min(2.5,(ts-lastT)/16.67||1);lastT=ts;
+  update(dt);draw();
+  requestAnimationFrame(loop);
+}
+function update(dt){
+  if(!launched){ball.x=paddle.x+paddle.w/2;ball.y=paddle.y-ball.r-1;return;}
+  ball.x+=ball.vx*dt;ball.y+=ball.vy*dt;
+  if(ball.x-ball.r<0){ball.x=ball.r;ball.vx*=-1;}
+  if(ball.x+ball.r>W){ball.x=W-ball.r;ball.vx*=-1;}
+  if(ball.y-ball.r<0){ball.y=ball.r;ball.vy*=-1;}
+  // paddle
+  if(ball.y+ball.r>=paddle.y&&ball.y+ball.r<=paddle.y+paddle.h+10&&ball.x>=paddle.x&&ball.x<=paddle.x+paddle.w&&ball.vy>0){
+    const hit=(ball.x-(paddle.x+paddle.w/2))/(paddle.w/2); // -1..1
+    const angle=hit*1.05; // max ~60deg
+    const sp=ball.speed;
+    ball.vx=sp*Math.sin(angle);ball.vy=-sp*Math.cos(angle);
+  }
+  // bricks
+  for(const b of bricks){
+    if(!b.alive)continue;
+    if(ball.x+ball.r>b.x&&ball.x-ball.r<b.x+b.w&&ball.y+ball.r>b.y&&ball.y-ball.r<b.y+b.h){
+      b.alive=false;score+=10;updHud();
+      // bounce: decide vertical vs horizontal
+      const overlapX=Math.min(ball.x+ball.r-b.x,b.x+b.w-(ball.x-ball.r));
+      const overlapY=Math.min(ball.y+ball.r-b.y,b.y+b.h-(ball.y-ball.r));
+      if(overlapX<overlapY)ball.vx*=-1;else ball.vy*=-1;
+      break;
+    }
+  }
+  if(bricks.every(b=>!b.alive))nextLevel();
+  // lost ball
+  if(ball.y-ball.r>H){
+    lives--;updHud();
+    if(lives<=0)return lose();
+    resetBallPaddle();
+  }
+}
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  bricks.forEach(b=>{if(!b.alive)return;ctx.fillStyle=b.color;roundRect(b.x,b.y,b.w,b.h,4);ctx.fill();ctx.fillStyle='rgba(255,255,255,.18)';ctx.fillRect(b.x,b.y,b.w,3);});
+  ctx.fillStyle='#e8c468';roundRect(paddle.x,paddle.y,paddle.w,paddle.h,6);ctx.fill();
+  ctx.fillStyle='#f3ead6';ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r,0,7);ctx.fill();
+  if(!launched){ctx.fillStyle='rgba(243,234,214,.7)';ctx.font='14px Georgia';ctx.textAlign='center';ctx.fillText('Tryk for at starte',W/2,H*0.6);}
+}
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function lose(){over=true;saveHigh('murbraek',score,false);$('ovTitle').textContent='Game over';$('ovTitle').className='';$('overlay').className='overlay lose show';$('ovText').textContent=`${score} point · niveau ${level}`;}
+
+function launch(){if(!launched&&!over){launched=true;ball.vx=ball.speed*0.4;ball.vy=-ball.speed*0.92;}}
+function movePaddle(clientX){const rect=cv.getBoundingClientRect();let x=(clientX-rect.left)*(W/rect.width);paddle.x=Math.max(0,Math.min(W-paddle.w,x-paddle.w/2));}
+cv.addEventListener('touchstart',e=>{launch();movePaddle(e.touches[0].clientX);},{passive:true});
+cv.addEventListener('touchmove',e=>{movePaddle(e.touches[0].clientX);e.preventDefault();},{passive:false});
+cv.addEventListener('mousedown',e=>{launch();movePaddle(e.clientX);});
+cv.addEventListener('mousemove',e=>{if(e.buttons)movePaddle(e.clientX);});
+$('ovNew').onclick=start;
+window.addEventListener('resize',resize);
+resize();start();
+</script>
+</body>
+</html>

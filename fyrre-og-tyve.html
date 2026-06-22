@@ -74,8 +74,11 @@
 const $=id=>document.getElementById(id);
 const SUITS=['♠','♥','♦','♣'];const RED=new Set(['♥','♦']);const RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 let state,history,moves,sel;
+function saveGame(){try{if(!state)return;if(state.foundations.reduce((a,p)=>a+p.length,0)===104){localStorage.removeItem('fyrre_save');return;}localStorage.setItem('fyrre_save',JSON.stringify({state,moves}));}catch(e){}}
+function loadGame(){try{const s=JSON.parse(localStorage.getItem('fyrre_save'));if(!s||!s.state)return false;state=s.state;moves=s.moves||0;history=[];sel=null;render();return true;}catch(e){return false;}}
 function makeDeck(){const d=[];for(let n=0;n<2;n++)for(let s=0;s<4;s++)for(let r=0;r<13;r++)d.push({suit:SUITS[s],rank:r});for(let i=d.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]];}return d;}
 function deal(){
+  localStorage.removeItem('fyrre_save');
   const deck=makeDeck();
   state={foundations:[[],[],[],[],[],[],[],[]],tableau:Array.from({length:10},()=>[]),stock:[],waste:[]};
   for(let c=0;c<10;c++)for(let n=0;n<4;n++)state.tableau[c].push(deck.pop());
@@ -113,6 +116,7 @@ function render(){
     tb.appendChild(col);
   });
   $('score').textContent=moves+' træk';
+  saveGame();
 }
 function onStock(){if(!state.stock.length)return;snapshot();state.waste.push(state.stock.pop());sel=null;moves++;render();}
 function tapCard(ci,idx){
@@ -157,7 +161,7 @@ let toastT;function toast(m){const t=$('toast');t.textContent=m;t.classList.add(
 $('newBtn').onclick=()=>{$('overlay').classList.remove('show');deal();};$('ovNew').onclick=()=>{$('overlay').classList.remove('show');deal();};
 $('undoBtn').onclick=undo;$('autoBtn').onclick=autoCollect;
 window.addEventListener('resize',()=>{if(state)render();});
-deal();
+if(!loadGame())deal();
 </script>
 </body>
 </html>

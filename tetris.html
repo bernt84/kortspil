@@ -55,6 +55,7 @@
 <div class="topbar">
   <a class="btn" href="index.html">‹ Menu</a>
   <h1>Tetris</h1>
+  <button class="btn" id="newBtn">Nyt</button>
   <button class="btn" id="pauseBtn">⏸</button>
 </div>
 
@@ -83,6 +84,7 @@
 
 <script>
 const $=id=>document.getElementById(id);
+function saveHigh(key,value,lower){try{const hs=JSON.parse(localStorage.getItem('spil_highscores'))||{};const cur=hs[key];if(cur===undefined||(lower?value<cur:value>cur)){hs[key]=value;localStorage.setItem('spil_highscores',JSON.stringify(hs));}}catch(e){}}
 const COLS=10, ROWS=20;
 const COLORS={I:'#5fd0d0',O:'#e8c468',T:'#b69cff',S:'#74d39a',Z:'#e88',J:'#7fb7ff',L:'#e8a85f'};
 const SHAPES={
@@ -143,7 +145,7 @@ function hardDrop(){
   lockPiece();
 }
 function lockPiece(){
-  merge();clearLines();spawn();updHud();draw();
+  merge();clearLines();spawn();updHud();draw();saveGame();
 }
 function clearLines(){
   let cleared=0;
@@ -198,15 +200,38 @@ function tick(ts){
   requestAnimationFrame(tick);
 }
 
-function start(){
+function saveGame(){
+  try{
+    if(over){localStorage.removeItem('tetris_save');return;}
+    localStorage.setItem('tetris_save',JSON.stringify({grid,cur,nextPiece,score,lines,level,bag}));
+  }catch(e){}
+}
+function loadGame(){
+  try{
+    const s=JSON.parse(localStorage.getItem('tetris_save'));
+    if(!s||!s.grid||!s.cur)return false;
+    grid=s.grid;cur=s.cur;nextPiece=s.nextPiece;score=s.score;lines=s.lines;level=s.level;bag=s.bag||[];
+    return true;
+  }catch(e){return false;}
+}
+function start(resume){
+  if(resume&&loadGame()){
+    over=false;paused=false;
+    $('overlay').classList.remove('show');$('pauseBtn').textContent='⏸';
+    updHud();resize();drawNext();
+    lastDrop=0;requestAnimationFrame(tick);return;
+  }
   grid=Array.from({length:ROWS},()=>Array(COLS).fill(0));
   score=0;lines=0;level=1;over=false;paused=false;bag=[];nextPiece=null;
   $('overlay').classList.remove('show');$('pauseBtn').textContent='⏸';
   spawn();updHud();resize();
   lastDrop=0;requestAnimationFrame(tick);
+  saveGame();
 }
 function gameOver(){
   over=true;
+  localStorage.removeItem('tetris_save');
+  saveHigh('tetris',score,false);
   $('ovTitle').textContent='Game over';
   $('ovText').textContent=`${score} point · ${lines} linjer · niveau ${level}`;
   $('overlay').classList.add('show');
@@ -218,7 +243,8 @@ $('right').onclick=()=>!over&&!paused&&move(1);
 $('rotate').onclick=()=>!over&&!paused&&rotate();
 $('drop').onclick=()=>!over&&!paused&&hardDrop();
 $('pauseBtn').onclick=()=>{if(over)return;paused=!paused;$('pauseBtn').textContent=paused?'▶':'⏸';};
-$('ovNew').onclick=start;
+$('newBtn').onclick=()=>{localStorage.removeItem('tetris_save');start(false);};
+$('ovNew').onclick=()=>{localStorage.removeItem('tetris_save');start(false);};
 document.addEventListener('keydown',e=>{
   if(over)return;
   if(e.key==='ArrowLeft')move(-1);
@@ -229,7 +255,7 @@ document.addEventListener('keydown',e=>{
 });
 window.addEventListener('resize',resize);
 
-start();
+start(true);
 </script>
 </body>
 </html>

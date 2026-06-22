@@ -149,8 +149,32 @@ const SUITS=['♠','♥','♦','♣'];
 const RED=new Set(['♥','♦']);
 const RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 const $=id=>document.getElementById(id);
+function saveHigh(key,value,lower){try{const hs=JSON.parse(localStorage.getItem('spil_highscores'))||{};const cur=hs[key];if(cur===undefined||(lower?value<cur:value>cur)){hs[key]=value;localStorage.setItem('spil_highscores',JSON.stringify(hs));}}catch(e){}}
 
 let state, history, drawCount=1, moves=0, startTime=null, timerInt=null, sel=null;
+
+function saveGame(){
+  try{
+    if(!state)return;
+    const total=state.foundations.reduce((a,p)=>a+p.length,0);
+    if(total===52){localStorage.removeItem('kabale_save');return;}
+    const elapsed=startTime?Math.floor((Date.now()-startTime)/1000):0;
+    localStorage.setItem('kabale_save',JSON.stringify({state,moves,elapsed,drawCount}));
+  }catch(e){}
+}
+function loadGame(){
+  try{
+    const s=JSON.parse(localStorage.getItem('kabale_save'));
+    if(!s||!s.state)return false;
+    state=s.state;moves=s.moves||0;drawCount=s.drawCount||1;
+    history=[];sel=null;
+    startTime=Date.now()-(s.elapsed||0)*1000;
+    if(timerInt)clearInterval(timerInt);
+    timerInt=setInterval(updTimer,1000);
+    updTimer();updMoves();render();
+    return true;
+  }catch(e){return false;}
+}
 
 /* ---------- deck / deal ---------- */
 function makeDeck(){
@@ -160,6 +184,7 @@ function makeDeck(){
   return d;
 }
 function deal(){
+  localStorage.removeItem('kabale_save');
   const deck=makeDeck();
   state={stock:[],waste:[],foundations:[[],[],[],[]],tableau:[[],[],[],[],[],[],[]]};
   for(let col=0;col<7;col++){
@@ -274,6 +299,7 @@ function render(){
     // tapping empty area of column = drop target
     slot.onclick=()=>tapTableau(t,pile.length-1);
   }
+  saveGame();
 }
 
 /* ---------- interactions ---------- */
@@ -470,7 +496,10 @@ function checkWin(){
   const total=state.foundations.reduce((a,p)=>a+p.length,0);
   if(total===52){
     clearInterval(timerInt);
-    $('winStats').textContent=`${moves} træk · ${fmtTime(Math.floor((Date.now()-startTime)/1000))}`;
+    localStorage.removeItem('kabale_save');
+    const secs=Math.floor((Date.now()-startTime)/1000);
+    saveHigh('kabale',secs,true);
+    $('winStats').textContent=`${moves} træk · ${fmtTime(secs)}`;
     $('winOverlay').classList.add('show');
   }
 }
@@ -490,7 +519,7 @@ $('hint').onclick=hint;
 $('auto').onclick=autoCollect;
 window.addEventListener('resize',()=>{if(state)render();});
 
-deal();
+if(!loadGame())deal();
 </script>
 </body>
 </html>

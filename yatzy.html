@@ -142,6 +142,7 @@
 
 <script>
 const $=id=>document.getElementById(id);
+function saveHigh(key,value,lower){try{const hs=JSON.parse(localStorage.getItem('spil_highscores'))||{};const cur=hs[key];if(cur===undefined||(lower?value<cur:value>cur)){hs[key]=value;localStorage.setItem('spil_highscores',JSON.stringify(hs));}}catch(e){}}
 
 /* categories: standard Danish/Scandinavian Yatzy (5 dice) */
 const CATS=[
@@ -304,6 +305,7 @@ function renderSheet(){
 function finish(){
   const totals=players.map((p,i)=>({name:p,score:total(i)}));
   const max=Math.max(...totals.map(t=>t.score));
+  saveHigh('yatzy',max,false);
   totals.sort((a,b)=>b.score-a.score);
   $('finalList').innerHTML=totals.map(t=>`<li class="${t.score===max?'win':''}"><span>${t.score===max?'♛ ':''}${esc(t.name)}</span><span>${t.score}</span></li>`).join('');
   $('overlay').classList.add('show');

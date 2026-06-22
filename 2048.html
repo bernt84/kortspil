@@ -64,17 +64,36 @@
 
 <script>
 const $=id=>document.getElementById(id);
+function saveHigh(key,value,lower){try{const hs=JSON.parse(localStorage.getItem('spil_highscores'))||{};const cur=hs[key];if(cur===undefined||(lower?value<cur:value>cur)){hs[key]=value;localStorage.setItem('spil_highscores',JSON.stringify(hs));}}catch(e){}}
 const N=4;
 const COLORS={2:'#e8d9b5',4:'#e6cf95',8:'#e8a85f',16:'#e8924a',32:'#e8743a',64:'#e8542a',128:'#e8c468',256:'#e8c054',512:'#e8bb40',1024:'#e6b52c',2048:'#e8c468',4096:'#b69cff',8192:'#7fb7ff'};
 let grid, score, best=+(localStorage.getItem('2048best')||0), over, won;
 
-function init(){
+function saveGame(){
+  try{
+    if(over){localStorage.removeItem('2048save');return;}
+    const flat=grid.map(row=>row.map(val));
+    localStorage.setItem('2048save',JSON.stringify({grid:flat,score,won}));
+  }catch(e){}
+}
+function loadGame(){
+  try{
+    const s=JSON.parse(localStorage.getItem('2048save'));
+    if(s&&s.grid){grid=s.grid;score=s.score||0;won=s.won||false;over=false;return true;}
+  }catch(e){}
+  return false;
+}
+function init(resume){
+  if(resume&&loadGame()){
+    $('overlay').classList.remove('show');$('best').textContent=best;render();return;
+  }
   grid=Array.from({length:N},()=>Array(N).fill(0));
   score=0;over=false;won=false;
   $('overlay').classList.remove('show');
   addTile();addTile();
   $('best').textContent=best;
   render();
+  saveGame();
 }
 function addTile(){
   const empty=[];
@@ -133,8 +152,9 @@ function move(dir){
   grid=g;
   if(JSON.stringify(grid)!==before){
     addTile();
-    if(score>best){best=score;localStorage.setItem('2048best',best);}
+    if(score>best){best=score;localStorage.setItem('2048best',best);saveHigh('2048',best,false);}
     render();
+    saveGame();
     checkEnd();
   }
 }
@@ -150,7 +170,7 @@ function canMove(){
 }
 function checkEnd(){
   if(won){$('ovTitle').textContent='2048! 🎉';$('overlay').classList.add('show');won='shown';return;}
-  if(!canMove()){over=true;$('ovTitle').textContent='Spillet er slut';$('overlay').classList.add('show');}
+  if(!canMove()){over=true;localStorage.removeItem('2048save');$('ovTitle').textContent='Spillet er slut';$('overlay').classList.add('show');}
 }
 
 /* input */
@@ -168,10 +188,10 @@ g.addEventListener('touchend',e=>{
   if(Math.abs(dx)>Math.abs(dy))move(dx>0?'right':'left');else move(dy>0?'down':'up');
   sx=sy=null;
 });
-$('newBtn').onclick=init;
-$('ovNew').onclick=()=>{if(won==='shown'&&!over){$('overlay').classList.remove('show');return;}init();};
+$('newBtn').onclick=()=>{localStorage.removeItem('2048save');init(false);};
+$('ovNew').onclick=()=>{if(won==='shown'&&!over){$('overlay').classList.remove('show');return;}localStorage.removeItem('2048save');init(false);};
 window.addEventListener('resize',render);
-init();
+init(true);
 </script>
 </body>
 </html>

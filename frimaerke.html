@@ -98,8 +98,11 @@ const RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 const DRAW=3;
 let state, history, moves, sel;
 
+function saveGame(){try{if(!state)return;if(state.foundations.reduce((a,p)=>a+p.length,0)===52){localStorage.removeItem('frimaerke_save');return;}localStorage.setItem('frimaerke_save',JSON.stringify({state,moves}));}catch(e){}}
+function loadGame(){try{const s=JSON.parse(localStorage.getItem('frimaerke_save'));if(!s||!s.state)return false;state=s.state;moves=s.moves||0;history=[];sel=null;render();return true;}catch(e){return false;}}
 function makeDeck(){const d=[];for(let s=0;s<4;s++)for(let r=0;r<13;r++)d.push({suit:SUITS[s],rank:r,up:false});for(let i=d.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]];}return d;}
 function deal(){
+  localStorage.removeItem('frimaerke_save');
   const deck=makeDeck();
   state={stock:[],waste:[],foundations:[[],[],[],[]],tableau:[[],[],[],[],[],[],[]]};
   for(let c=0;c<7;c++)for(let n=0;n<=c;n++){const card=deck.pop();card.up=(n===c);state.tableau[c].push(card);}
@@ -144,6 +147,7 @@ function render(){
       s.appendChild(e);y+=c.up?upOff:downOff;});
     s.style.minHeight=(y+colW*1.4)+'px';s.onclick=()=>tapT(t,pile.length-1);}
   $('score').textContent=moves+' træk';
+  saveGame();
 }
 function onStock(){
   snapshot();
@@ -173,7 +177,7 @@ $('newBtn').onclick=()=>{$('overlay').classList.remove('show');deal();};
 $('ovNew').onclick=()=>{$('overlay').classList.remove('show');deal();};
 $('undoBtn').onclick=undo;$('autoBtn').onclick=autoCollect;
 window.addEventListener('resize',()=>{if(state)render();});
-deal();
+if(!loadGame())deal();
 </script>
 </body>
 </html>

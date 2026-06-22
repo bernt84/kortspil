@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a3d2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ordspil">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a3d2e'/%3E%3Crect x='10' y='26' width='13' height='13' rx='2' fill='%2374d39a'/%3E%3Crect x='25' y='26' width='13' height='13' rx='2' fill='%23b89640'/%3E%3Crect x='40' y='26' width='13' height='13' rx='2' fill='%23123'/%3E%3C/svg%3E">
+<title>Ordspil</title>
+<style>
+  :root{--felt:#0a3d2e;--felt-2:#0d4a37;--felt-line:#10573f;--gold:#e8c468;--gold-dim:#b89640;--cream:#f3ead6;--ink:#0a2018;--correct:#4f9c6e;--present:#c8a93e;--absent:#1a2e26;--shadow:rgba(0,0,0,.4);}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;}
+  html,body{margin:0;padding:0;}
+  body{font-family:"Georgia",serif;background:radial-gradient(ellipse at 50% 0%, var(--felt-2), var(--felt) 75%);color:var(--cream);min-height:100vh;min-height:100dvh;padding:env(safe-area-inset-top) 8px 12px;display:flex;flex-direction:column;}
+  .topbar{display:flex;align-items:center;gap:10px;max-width:480px;margin:0 auto;width:100%;padding:8px 2px 4px;}
+  .topbar h1{flex:1;font-size:19px;margin:0;color:var(--gold);font-variant:small-caps;letter-spacing:1px;}
+  .btn{font-family:inherit;font-size:13px;border:1px solid var(--felt-line);border-radius:9px;padding:7px 10px;cursor:pointer;background:transparent;color:var(--gold);}
+  .btn.solid{background:var(--gold);color:var(--ink);border:none;font-weight:bold;}
+  .btn:active{transform:translateY(1px);}
+  a.btn{text-decoration:none;display:inline-block;}
+  .board{display:grid;grid-template-rows:repeat(6,1fr);gap:6px;max-width:330px;width:100%;margin:10px auto 0;}
+  .row{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
+  .tile{aspect-ratio:1;border:2px solid var(--felt-line);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:clamp(20px,7vw,30px);font-weight:bold;text-transform:uppercase;color:var(--cream);background:transparent;transition:transform .1s;}
+  .tile.filled{border-color:var(--gold-dim);}
+  .tile.correct{background:var(--correct);border-color:var(--correct);color:#fff;}
+  .tile.present{background:var(--present);border-color:var(--present);color:#fff;}
+  .tile.absent{background:var(--absent);border-color:var(--absent);color:rgba(243,234,214,.5);}
+  .tile.pop{transform:scale(1.08);}
+  .keyboard{max-width:480px;width:100%;margin:14px auto 0;display:flex;flex-direction:column;gap:6px;}
+  .krow{display:flex;gap:5px;justify-content:center;}
+  .key{flex:1;min-width:0;height:48px;border-radius:7px;border:none;background:#1d5a44;color:var(--cream);font-family:inherit;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;text-transform:uppercase;font-weight:bold;}
+  .key.wide{flex:1.5;font-size:12px;}
+  .key:active{transform:translateY(1px);}
+  .key.correct{background:var(--correct);}
+  .key.present{background:var(--present);}
+  .key.absent{background:#0e2820;color:rgba(243,234,214,.4);}
+  .hint{text-align:center;font-size:13px;color:var(--gold-dim);margin-top:8px;min-height:18px;}
+  .overlay{position:fixed;inset:0;background:rgba(5,25,18,.92);z-index:80;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;}
+  .overlay.show{display:flex;}
+  .overlay h2{font-size:28px;margin:0 0 8px;color:var(--gold);font-variant:small-caps;}
+  .overlay p{margin:0 0 18px;}
+  .overlay .word{font-size:22px;color:var(--gold);letter-spacing:3px;text-transform:uppercase;margin-bottom:14px;}
+  .toast{position:fixed;left:50%;top:80px;transform:translateX(-50%) translateY(-20px);background:rgba(7,40,30,.96);border:1px solid var(--gold-dim);color:var(--cream);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:.2s;z-index:90;pointer-events:none;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="btn" href="index.html">‹ Menu</a>
+  <h1>Ordspil</h1>
+  <button class="btn" id="newBtn">Nyt</button>
+</div>
+<div class="board" id="board"></div>
+<div class="hint" id="hint">Gæt det danske ord på 5 bogstaver</div>
+<div class="keyboard" id="keyboard"></div>
+
+<div class="overlay" id="overlay"><h2 id="ovTitle"></h2><div class="word" id="ovWord"></div><p id="ovText"></p><button class="btn solid" id="ovNew" style="font-size:16px;padding:12px 20px;">Spil igen</button></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+function saveHigh(key,value,lower){try{const hs=JSON.parse(localStorage.getItem('spil_highscores'))||{};const cur=hs[key];if(cur===undefined||(lower?value<cur:value>cur)){hs[key]=value;localStorage.setItem('spil_highscores',JSON.stringify(hs));}}catch(e){}}
+const WORDS=["abild","agent","aktie","alarm","albue","anker","appel","bager","baner","basis","bjerg","blade","blink","boble","bonus","brand","bukke","bunke","bytte","cykel","daler","damen","degne","delte","digte","disko","drage","drone","dvale","dynge","elite","emmer","epoke","etage","faser","ferie","filur","finer","fiske","fjern","flora","foder","fugle","fnise","gaden","gaver","gemte","genre","gerne","gilde","gnier","grams","gribe","gryde","guide","haler","havre","hejse","helte","herre","hilse","hofte","holde","hoved","hvede","hvile","hylde","ideal","indre","ingen","islam","jagte","kanon","karat","kasse","kedel","kilde","kiste","knude","kobra","korte","krans","kruse","kysse","labil","lagen","laste","laver","lemur","lever","linje","liste","lugte","lunge","lyder","mange","medie","melis","moder","motor","multe","myrde","nakke","navne","nedre","nerve","nitte","noble","nudel","nuser","nynne","oblat","ocean","odder","offer","olien","onkel","opera","orden","orgel","ormen","otium","ovale","palme","panel","pasta","pebre","penge","perle","piano","piber","pille","pinde","plade","plage","pleje","poker","porte","poste","prale","prima","pulje","pumpe","puste","pynte","rabat","radar","ramme","raske","reder","regne","rejse","remse","ridse","ringe","roder","rolig","roser","ruder","rumle","runde","ruser","ryger","ryste","sabel","sagte","salat","samle","sange","satse","savne","sejle","senil","serie","silke","sirup","skema","skole","skrue","slibe","slyng","smage","smede","snare","snore","solen","spand","spejl","spids","spire","sprog","stege","stire","stive","store","stryg","sukte","sulte","svale","sylte","synes","tabel","taske","tempo","terne","tigre","tisse","tobak","toner","torsk","trave","trumf","tunge","tvang","ugler","ulden","under","urets","uvane","vable","valgt","vande","varer","vaser","vifte","viger","ville","vinde","virus","visne","vodka","vrede","vrist","vugge","yacht","ynder","zebra","bæger","brænd","læber","sæson","tænke","væske","ræven","sælge","fælde","gælde","hælde","mælke","næver","skæld","stærk","tæppe","væbne","æbler","ærlig","bløde","brøde","frøen","grønt","købte","løbet","mødte","nøgle","prøve","rødme","tømme","ønske","bønne","dømme","fløde","høste","løfte","mølle","røget","søger","trøje","håbet","låner","måler","måned","nåede","råber","såret","tåget","våben","åbner","håber","påske"];
+const WORDSET=new Set(WORDS);
+const ROWS=6,LEN=5;
+let answer,guesses,current,over,won,keyState;
+
+function newGame(){
+  answer=WORDS[Math.floor(Math.random()*WORDS.length)];
+  guesses=[];current='';over=false;won=false;keyState={};
+  $('overlay').classList.remove('show');$('hint').textContent='Gæt det danske ord på 5 bogstaver';
+  buildBoard();buildKeyboard();
+}
+function buildBoard(){
+  const b=$('board');b.innerHTML='';
+  for(let r=0;r<ROWS;r++){
+    const row=document.createElement('div');row.className='row';
+    for(let c=0;c<LEN;c++){const t=document.createElement('div');t.className='tile';t.id='t'+r+'_'+c;row.appendChild(t);}
+    b.appendChild(row);
+  }
+  renderCurrent();
+}
+const KEYS=[['q','w','e','r','t','y','u','i','o','p','å'],['a','s','d','f','g','h','j','k','l','æ','ø'],['ENTER','z','x','c','v','b','n','m','⌫']];
+function buildKeyboard(){
+  const kb=$('keyboard');kb.innerHTML='';
+  KEYS.forEach(rowKeys=>{
+    const row=document.createElement('div');row.className='krow';
+    rowKeys.forEach(k=>{
+      const key=document.createElement('button');key.className='key'+(k==='ENTER'||k==='⌫'?' wide':'');
+      key.textContent=k==='ENTER'?'Gæt':k;key.dataset.k=k;
+      if(keyState[k])key.classList.add(keyState[k]);
+      key.onclick=()=>handleKey(k);
+      row.appendChild(key);
+    });
+    kb.appendChild(row);
+  });
+}
+function renderCurrent(){
+  const r=guesses.length;
+  for(let c=0;c<LEN;c++){
+    const t=$('t'+r+'_'+c);if(!t)continue;
+    t.textContent=current[c]||'';
+    t.className='tile'+(current[c]?' filled':'');
+  }
+}
+function handleKey(k){
+  if(over)return;
+  if(k==='ENTER')return submit();
+  if(k==='⌫'){current=current.slice(0,-1);renderCurrent();return;}
+  if(current.length<LEN){current+=k.toLowerCase();renderCurrent();}
+}
+function submit(){
+  if(current.length<LEN){toast('Ordet skal have 5 bogstaver');return;}
+  if(!WORDSET.has(current)){toast('Ukendt ord');shake();return;}
+  const r=guesses.length;
+  const result=score(current,answer);
+  for(let c=0;c<LEN;c++){
+    const t=$('t'+r+'_'+c);t.textContent=current[c];
+    t.classList.remove('filled');t.classList.add(result[c]);
+    // update key state (correct > present > absent)
+    const ch=current[c],st=result[c];
+    if(keyState[ch]!=='correct'){if(st==='correct'||(st==='present'&&keyState[ch]!=='correct')||!keyState[ch])keyState[ch]=st;}
+  }
+  guesses.push(current);
+  if(current===answer){won=true;over=true;finish();}
+  else if(guesses.length>=ROWS){over=true;finish();}
+  else{current='';buildKeyboard();}
+}
+function score(guess,ans){
+  const res=Array(LEN).fill('absent');
+  const aArr=ans.split(''),gArr=guess.split('');
+  const counts={};
+  for(const ch of aArr)counts[ch]=(counts[ch]||0)+1;
+  for(let i=0;i<LEN;i++){if(gArr[i]===aArr[i]){res[i]='correct';counts[gArr[i]]--;}}
+  for(let i=0;i<LEN;i++){if(res[i]==='correct')continue;if(counts[gArr[i]]>0){res[i]='present';counts[gArr[i]]--;}}
+  return res;
+}
+function finish(){
+  buildKeyboard();
+  if(won){
+    $('ovTitle').textContent='Flot! 🎉';
+    $('ovText').textContent=`Gættet på ${guesses.length} forsøg`;
+    // highscore = fewest guesses (lower better)
+    saveHigh('ordspil',guesses.length,true);
+  }else{
+    $('ovTitle').textContent='Desværre';
+    $('ovText').textContent='Ordet var:';
+  }
+  $('ovWord').textContent=answer;
+  setTimeout(()=>$('overlay').classList.add('show'),600);
+}
+function shake(){const r=guesses.length;for(let c=0;c<LEN;c++){const t=$('t'+r+'_'+c);t.style.animation='none';t.offsetHeight;t.style.transform='translateX(0)';}const row=$('board').children[r];row.animate([{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'translateX(0)'}],{duration:200});}
+let toastT;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1500);}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter')handleKey('ENTER');
+  else if(e.key==='Backspace')handleKey('⌫');
+  else if(/^[a-zæøå]$/i.test(e.key))handleKey(e.key.toLowerCase());
+});
+$('newBtn').onclick=newGame;$('ovNew').onclick=newGame;
+newGame();
+</script>
+</body>
+</html>

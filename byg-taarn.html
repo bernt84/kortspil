@@ -46,6 +46,8 @@
 
 <script>
 const $=id=>document.getElementById(id);
+function saveHigh(key,value,lower){try{const hs=JSON.parse(localStorage.getItem('spil_highscores'))||{};const cur=hs[key];if(cur===undefined||(lower?value<cur:value>cur)){hs[key]=value;localStorage.setItem('spil_highscores',JSON.stringify(hs));}}catch(e){}}
+
 const cv=$('cv'),ctx=cv.getContext('2d');
 const COLORS=['#74d39a','#7fb7ff','#e8c468','#e88','#b69cff','#5fd0d0','#e8a85f','#e85d8a'];
 let W,H,blocks,current,baseW,blockH,speed,dir,score,best=+(localStorage.getItem('towerBest')||0),over,scrollY,combo;
@@ -126,7 +128,7 @@ function drop(){
   const newBlock={x:left,w:overlap,color:current.color};
   blocks.push(newBlock);
   score++;
-  if(score>best){best=score;localStorage.setItem('towerBest',best);$('best').textContent='bedste '+best;}
+  if(score>best){best=score;localStorage.setItem('towerBest',best);saveHigh('bygtaarn',best,false);$('best').textContent='bedste '+best;}
   updHud();
   if(combo>=2)$('hint').textContent='Perfekt! Combo ×'+combo;else $('hint').textContent='';
   // scroll up so tower stays visible: keep newest ~middle

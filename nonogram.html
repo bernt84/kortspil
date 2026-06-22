@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a3d2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Nonogram">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a3d2e'/%3E%3Crect x='14' y='14' width='12' height='12' fill='%23e8c468'/%3E%3Crect x='38' y='14' width='12' height='12' fill='%23e8c468'/%3E%3Crect x='26' y='26' width='12' height='12' fill='%23e8c468'/%3E%3Crect x='14' y='38' width='12' height='12' fill='%23e8c468'/%3E%3Crect x='38' y='38' width='12' height='12' fill='%23e8c468'/%3E%3C/svg%3E">
+<title>Nonogram</title>
+<style>
+  :root{--felt:#0a3d2e;--felt-2:#0d4a37;--felt-line:#10573f;--gold:#e8c468;--gold-dim:#b89640;--cream:#f3ead6;--ink:#0a2018;--fill:#e8c468;--shadow:rgba(0,0,0,.4);}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;}
+  html,body{margin:0;padding:0;}
+  body{font-family:"Georgia",serif;background:radial-gradient(ellipse at 50% 0%, var(--felt-2), var(--felt) 75%);color:var(--cream);min-height:100vh;min-height:100dvh;padding:env(safe-area-inset-top) 8px 16px;}
+  .wrap{max-width:480px;margin:0 auto;}
+  .topbar{display:flex;align-items:center;gap:10px;padding:10px 2px 6px;}
+  .topbar h1{flex:1;font-size:19px;margin:0;color:var(--gold);font-variant:small-caps;letter-spacing:1px;}
+  .btn{font-family:inherit;font-size:13px;border:1px solid var(--felt-line);border-radius:9px;padding:7px 10px;cursor:pointer;background:transparent;color:var(--gold);}
+  .btn.solid{background:var(--gold);color:var(--ink);border:none;font-weight:bold;}
+  .btn:active{transform:translateY(1px);}
+  .btn.active{background:var(--gold-dim);color:var(--ink);border-color:var(--gold-dim);}
+  a.btn{text-decoration:none;display:inline-block;}
+  .diffs{display:flex;gap:6px;margin:6px 0;}
+  .diffs .btn{flex:1;text-align:center;}
+  .modebar{display:flex;gap:8px;margin:10px 0;}
+  .modebar .btn{flex:1;text-align:center;}
+  .puzzle{display:inline-block;background:var(--felt-2);border:1px solid var(--felt-line);border-radius:10px;padding:6px;margin:8px auto 0;overflow:auto;max-width:100%;}
+  table{border-collapse:collapse;}
+  .corner{background:transparent;}
+  .colhint{vertical-align:bottom;text-align:center;font-size:11px;color:var(--gold-dim);padding:2px;line-height:1.15;min-width:24px;}
+  .colhint div{}
+  .rowhint{text-align:right;font-size:11px;color:var(--gold-dim);padding:0 6px;white-space:nowrap;}
+  td.cell{width:30px;height:30px;border:1px solid var(--felt-line);cursor:pointer;text-align:center;}
+  td.cell.thickL{border-left:2px solid #1c6e52;}
+  td.cell.thickT{border-top:2px solid #1c6e52;}
+  td.cell.fill{background:var(--fill);}
+  td.cell.cross{color:#7a5050;font-weight:bold;font-size:15px;}
+  .hint{text-align:center;font-size:12px;color:var(--gold-dim);margin-top:12px;}
+  .controls{margin-top:14px;display:flex;gap:8px;}
+  .controls .btn{flex:1;text-align:center;}
+  .overlay{position:fixed;inset:0;background:rgba(5,25,18,.92);z-index:80;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;}
+  .overlay.show{display:flex;}
+  .overlay h2{font-size:30px;margin:0 0 8px;color:var(--gold);font-variant:small-caps;}
+  .overlay p{margin:0 0 18px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="btn" href="index.html">‹ Menu</a>
+    <h1>Nonogram</h1>
+  </div>
+  <div class="diffs">
+    <button class="btn active" data-n="5">5×5</button>
+    <button class="btn" data-n="10">10×10</button>
+    <button class="btn" data-n="15">15×15</button>
+  </div>
+  <div class="modebar">
+    <button class="btn active" id="modeFill">⬛ Udfyld</button>
+    <button class="btn" id="modeCross">✕ Marker tom</button>
+  </div>
+  <div style="text-align:center;"><div class="puzzle" id="puzzle"></div></div>
+  <div class="hint">Tallene viser sammenhængende felter i hver række/kolonne. Udfyld det rigtige billede.</div>
+  <div class="controls">
+    <button class="btn solid" id="newBtn" style="flex:1;padding:12px;">Nyt puslespil</button>
+  </div>
+</div>
+<div class="overlay" id="overlay"><h2>Løst! 🎉</h2><p id="ovText"></p><button class="btn solid" id="ovNew" style="font-size:17px;padding:13px 22px;">Igen</button></div>
+
+<script>
+const $=id=>document.getElementById(id);
+let N=5,solution,cells,mode='fill',solved;
+function newGame(){
+  $('overlay').classList.remove('show');mode='fill';
+  $('modeFill').classList.add('active');$('modeCross').classList.remove('active');
+  // generate a random solvable picture with reasonable density
+  do{
+    solution=[];
+    for(let r=0;r<N;r++){solution[r]=[];for(let c=0;c<N;c++)solution[r][c]=Math.random()<0.55?1:0;}
+  }while(!everyLineNonEmpty());
+  cells=Array.from({length:N},()=>Array(N).fill(0)); // 0 empty,1 fill,2 cross
+  solved=false;render();
+}
+function everyLineNonEmpty(){
+  for(let r=0;r<N;r++)if(solution[r].every(x=>!x))return false;
+  for(let c=0;c<N;c++){let any=false;for(let r=0;r<N;r++)if(solution[r][c])any=true;if(!any)return false;}
+  return true;
+}
+function lineHints(arr){
+  const h=[];let run=0;
+  for(const v of arr){if(v){run++;}else{if(run){h.push(run);run=0;}}}
+  if(run)h.push(run);
+  return h.length?h:[0];
+}
+function rowHints(r){return lineHints(solution[r]);}
+function colHints(c){const col=[];for(let r=0;r<N;r++)col.push(solution[r][c]);return lineHints(col);}
+
+function render(){
+  const wrap=$('puzzle');wrap.innerHTML='';
+  const table=document.createElement('table');
+  // column hints header
+  const maxColH=Math.max(...Array.from({length:N},(_,c)=>colHints(c).length));
+  const thead=document.createElement('tr');
+  const corner=document.createElement('td');corner.className='corner';thead.appendChild(corner);
+  for(let c=0;c<N;c++){
+    const th=document.createElement('td');th.className='colhint';
+    th.innerHTML=colHints(c).map(n=>`<div>${n}</div>`).join('');
+    thead.appendChild(th);
+  }
+  table.appendChild(thead);
+  for(let r=0;r<N;r++){
+    const tr=document.createElement('tr');
+    const rh=document.createElement('td');rh.className='rowhint';rh.textContent=rowHints(r).join(' ');
+    tr.appendChild(rh);
+    for(let c=0;c<N;c++){
+      const td=document.createElement('td');td.className='cell';
+      if(c%5===0&&c>0)td.classList.add('thickL');
+      if(r%5===0&&r>0)td.classList.add('thickT');
+      if(cells[r][c]===1)td.classList.add('fill');
+      else if(cells[r][c]===2){td.classList.add('cross');td.textContent='✕';}
+      td.onclick=()=>tap(r,c);
+      tr.appendChild(td);
+    }
+    table.appendChild(tr);
+  }
+  wrap.appendChild(table);
+}
+function tap(r,c){
+  if(solved)return;
+  if(mode==='fill')cells[r][c]=cells[r][c]===1?0:1;
+  else cells[r][c]=cells[r][c]===2?0:2;
+  render();check();
+}
+function check(){
+  for(let r=0;r<N;r++)for(let c=0;c<N;c++){
+    const want=solution[r][c]===1;
+    const have=cells[r][c]===1;
+    if(want!==have)return;
+  }
+  solved=true;
+  saveBest();
+  $('ovText').textContent=`${N}×${N} løst`;
+  setTimeout(()=>$('overlay').classList.add('show'),250);
+}
+function saveBest(){try{const hs=JSON.parse(localStorage.getItem('spil_highscores'))||{};const k='nonogram_'+N;hs[k]=(hs[k]||0)+1;localStorage.setItem('spil_highscores',JSON.stringify(hs));}catch(e){}}
+$('modeFill').onclick=()=>{mode='fill';$('modeFill').classList.add('active');$('modeCross').classList.remove('active');};
+$('modeCross').onclick=()=>{mode='cross';$('modeCross').classList.add('active');$('modeFill').classList.remove('active');};
+document.querySelectorAll('.diffs .btn').forEach(b=>b.onclick=()=>{document.querySelectorAll('.diffs .btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');N=+b.dataset.n;newGame();});
+$('newBtn').onclick=newGame;$('ovNew').onclick=newGame;
+newGame();
+</script>
+</body>
+</html>

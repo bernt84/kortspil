@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a3d2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Transport">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a3d2e'/%3E%3Crect x='14' y='30' width='22' height='14' rx='2' fill='%23e8c468'/%3E%3Crect x='36' y='34' width='12' height='10' rx='2' fill='%23e8c468'/%3E%3Ccircle cx='22' cy='46' r='4' fill='%230a2018'/%3E%3Ccircle cx='42' cy='46' r='4' fill='%230a2018'/%3E%3C/svg%3E">
+<title>Transport</title>
+<style>
+  :root{--felt:#0a3d2e;--felt-2:#0d4a37;--felt-line:#10573f;--gold:#e8c468;--gold-dim:#b89640;--cream:#f3ead6;--ink:#0a2018;--red:#c0392b;--road:#5a5048;--water:#0c3a4a;--town:#e8c468;--shadow:rgba(0,0,0,.4);}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;touch-action:manipulation;}
+  html,body{margin:0;padding:0;height:100%;overflow:hidden;}
+  body{font-family:"Georgia",serif;background:radial-gradient(ellipse at 50% 0%, var(--felt-2), var(--felt) 75%);color:var(--cream);height:100vh;height:100dvh;display:flex;flex-direction:column;padding:env(safe-area-inset-top) 8px calc(8px + env(safe-area-inset-bottom));}
+  .topbar{display:flex;align-items:center;gap:8px;max-width:620px;margin:0 auto;width:100%;padding:8px 2px 4px;}
+  .topbar h1{flex:1;font-size:18px;margin:0;color:var(--gold);font-variant:small-caps;letter-spacing:1px;}
+  .btn{font-family:inherit;font-size:13px;border:1px solid var(--felt-line);border-radius:9px;padding:7px 9px;cursor:pointer;background:transparent;color:var(--gold);}
+  .btn.solid{background:var(--gold);color:var(--ink);border:none;font-weight:bold;box-shadow:0 2px 0 var(--gold-dim);}
+  .btn:active{transform:translateY(1px);}
+  .btn:disabled{opacity:.4;}
+  a.btn{text-decoration:none;display:inline-block;}
+  .hud{display:flex;justify-content:space-between;gap:6px;background:var(--felt-2);border:1px solid var(--felt-line);border-radius:10px;padding:7px 10px;margin:5px auto;max-width:620px;width:100%;}
+  .hud .item{text-align:center;flex:1;}
+  .hud .v{font-size:16px;color:var(--gold);font-weight:bold;}
+  .hud .l{font-size:9px;letter-spacing:1px;color:var(--gold-dim);text-transform:uppercase;}
+  .stage{flex:1;max-width:620px;margin:0 auto;width:100%;position:relative;min-height:0;}
+  canvas{background:#0f5a40;border:2px solid var(--felt-line);border-radius:10px;display:block;width:100%;height:100%;box-shadow:0 6px 18px var(--shadow);}
+  .panel{max-width:620px;margin:6px auto 0;width:100%;background:var(--felt-2);border:1px solid var(--felt-line);border-radius:10px;padding:10px;font-size:14px;min-height:54px;}
+  .panel .row{display:flex;gap:8px;align-items:center;}
+  .panel .row+.row{margin-top:8px;}
+  .panel .btn{flex:1;text-align:center;}
+  .hint{text-align:center;font-size:12px;color:var(--gold-dim);margin-top:6px;min-height:16px;}
+  .overlay{position:fixed;inset:0;background:rgba(5,25,18,.93);z-index:80;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;}
+  .overlay.show{display:flex;}
+  .overlay h2{font-size:28px;margin:0 0 8px;color:var(--gold);font-variant:small-caps;}
+  .overlay p{margin:0 0 18px;max-width:300px;}
+  .toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%) translateY(20px);background:rgba(7,40,30,.96);border:1px solid var(--gold-dim);color:var(--cream);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:.25s;z-index:70;pointer-events:none;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="btn" href="index.html">‹ Menu</a>
+  <h1>Transport</h1>
+  <button class="btn" id="newBtn">Nyt</button>
+</div>
+<div class="hud">
+  <div class="item"><div class="v" id="cash">0</div><div class="l">💰 Kassen</div></div>
+  <div class="item"><div class="v" id="trucks">0</div><div class="l">🚚 Lastbiler</div></div>
+  <div class="item"><div class="v" id="routes">0</div><div class="l">Ruter</div></div>
+  <div class="item"><div class="v" id="profit">0</div><div class="l">Pr. måned</div></div>
+</div>
+<div class="stage"><canvas id="cv"></canvas></div>
+<div class="panel" id="panel"></div>
+<div class="hint" id="hint">Tryk på to byer for at bygge en rute</div>
+
+<div class="overlay" id="overlay"><h2 id="ovTitle"></h2><p id="ovText"></p><button class="btn solid" id="ovNew" style="font-size:16px;padding:12px 20px;">Nyt spil</button></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const cv=$('cv'),ctx=cv.getContext('2d');
+function saveHigh(key,value,lower){try{const hs=JSON.parse(localStorage.getItem('spil_highscores'))||{};const cur=hs[key];if(cur===undefined||(lower?value<cur:value>cur)){hs[key]=value;localStorage.setItem('spil_highscores',JSON.stringify(hs));}}catch(e){}}
+
+// Fixed map: towns with normalized coords (0..1), name, goods produced
+const TOWN_DEFS=[
+  {name:'Havneby',x:0.12,y:0.22,good:'fisk'},
+  {name:'Møllerup',x:0.40,y:0.12,good:'korn'},
+  {name:'Skovby',x:0.74,y:0.18,good:'tømmer'},
+  {name:'Stenløse',x:0.86,y:0.45,good:'sten'},
+  {name:'Bakkedal',x:0.62,y:0.50,good:'kul'},
+  {name:'Engby',x:0.24,y:0.55,good:'mælk'},
+  {name:'Sønderup',x:0.16,y:0.82,good:'uld'},
+  {name:'Østerby',x:0.52,y:0.84,good:'jern'},
+  {name:'Vestmark',x:0.82,y:0.78,good:'kalk'},
+];
+const TRUCK_COST=2000, TRUCK_UPKEEP=50, ROUTE_BASE=500;
+let cash, towns, routes, trucks, month, monthTimer, selTown, gameOver;
+
+function init(resume){
+  if(resume&&load()){draw();return;}
+  cash=8000;month=0;routes=[];trucks=[];selTown=null;gameOver=false;
+  towns=TOWN_DEFS.map((t,i)=>({...t,id:i,size:1,served:0}));
+  $('overlay').classList.remove('show');
+  resize();updHud();updPanel();save();
+}
+function resize(){
+  const st=document.querySelector('.stage');
+  cv.width=st.clientWidth;cv.height=st.clientHeight;
+  draw();
+}
+function tx(t){return t.x*cv.width;}
+function ty(t){return t.y*cv.height;}
+function dist(a,b){return Math.hypot((a.x-b.x)*cv.width,(a.y-b.y)*cv.height);}
+function routeCost(a,b){return Math.round(ROUTE_BASE+dist(a,b)*1.2);}
+
+/* ---- save/load ---- */
+function save(){try{if(gameOver){localStorage.removeItem('transport_save');return;}
+  localStorage.setItem('transport_save',JSON.stringify({cash,month,routes,trucks,towns:towns.map(t=>({id:t.id,size:t.size,served:t.served}))}));}catch(e){}}
+function load(){try{const s=JSON.parse(localStorage.getItem('transport_save'));if(!s||s.cash===undefined)return false;
+  cash=s.cash;month=s.month||0;routes=s.routes||[];trucks=s.trucks||[];gameOver=false;selTown=null;
+  towns=TOWN_DEFS.map((t,i)=>({...t,id:i,size:1,served:0}));
+  if(s.towns)s.towns.forEach(st=>{const t=towns[st.id];if(t){t.size=st.size;t.served=st.served;}});
+  $('overlay').classList.remove('show');resize();updHud();updPanel();
+  startClock();return true;}catch(e){return false;}}
+
+/* ---- interaction ---- */
+cv.addEventListener('click',e=>{
+  if(gameOver)return;
+  const rect=cv.getBoundingClientRect();
+  const px=(e.clientX-rect.left)*(cv.width/rect.width),py=(e.clientY-rect.top)*(cv.height/rect.height);
+  let hit=null,best=36;
+  for(const t of towns){const d=Math.hypot(tx(t)-px,ty(t)-py);if(d<best){best=d;hit=t;}}
+  if(!hit){selTown=null;updPanel();draw();return;}
+  if(selTown===null){selTown=hit.id;updPanel();draw();return;}
+  if(selTown===hit.id){selTown=null;updPanel();draw();return;}
+  // build route between selTown and hit
+  tryBuildRoute(selTown,hit.id);
+});
+function routeExists(a,b){return routes.some(r=>(r.a===a&&r.b===b)||(r.a===b&&r.b===a));}
+function tryBuildRoute(a,b){
+  if(routeExists(a,b)){selTown=null;toast('Ruten findes allerede');updPanel();draw();return;}
+  const cost=routeCost(towns[a],towns[b]);
+  if(cash<cost){toast('Ikke nok penge ('+cost+'💰)');selTown=null;updPanel();draw();return;}
+  cash-=cost;
+  routes.push({a,b,len:dist(towns[a],towns[b])});
+  selTown=null;updHud();updPanel();draw();save();
+  toast('Rute bygget! Køb en lastbil på den.');
+}
+function buyTruck(routeIdx){
+  if(cash<TRUCK_COST){toast('Ikke nok penge ('+TRUCK_COST+'💰)');return;}
+  cash-=TRUCK_COST;
+  const r=routes[routeIdx];
+  trucks.push({route:routeIdx,pos:0,dir:1,loaded:true,cargo:towns[r.a].good});
+  updHud();updPanel();save();
+}
+function sellTruck(routeIdx){
+  const i=trucks.findIndex(t=>t.route===routeIdx);
+  if(i<0)return;
+  trucks.splice(i,1);cash+=TRUCK_COST*0.5;updHud();updPanel();save();
+}
+
+/* ---- economy / clock ---- */
+function startClock(){clearInterval(monthTimer);monthTimer=setInterval(tickMonth,4000);}
+function tickMonth(){
+  if(gameOver)return;
+  month++;
+  // upkeep
+  const upkeep=trucks.length*TRUCK_UPKEEP;
+  cash-=upkeep;
+  // town growth: towns with trucks serving them grow
+  towns.forEach(t=>t.served=0);
+  trucks.forEach(t=>{const r=routes[t.route];towns[r.a].served++;towns[r.b].served++;});
+  towns.forEach(t=>{if(t.served>0&&t.size<5&&Math.random()<0.25)t.size+=0.1;});
+  updHud();
+  if(cash<0){lose();}
+  save();
+}
+function monthlyProfit(){
+  // estimate matched to actual delivery pace: shorter routes deliver more often
+  let income=0;
+  trucks.forEach(t=>{
+    const r=routes[t.route];const sz=(towns[r.a].size+towns[r.b].size)/2;
+    // trips per month falls with length; pay per trip rises with length -> net rises modestly
+    const tripsPerMonth=8/(r.len/200+1);
+    income+=Math.round(r.len*0.9*sz*tripsPerMonth);
+  });
+  return Math.round(income-trucks.length*TRUCK_UPKEEP);
+}
+
+/* ---- main loop (truck movement + delivery) ---- */
+let lastT=0;
+function loop(ts){
+  if(gameOver){return;}
+  const dt=Math.min(50,ts-lastT);lastT=ts;
+  for(const t of trucks){
+    const r=routes[t.route];if(!r)continue;
+    const len=r.len;
+    const speed=0.00009*dt*40; // slower so deliveries are meaningful
+    t.pos+=t.dir*(speed*(1/(len/200+1)));
+    if(t.pos>=1){t.pos=1;deliver(t,r.b,r.a);t.dir=-1;}
+    else if(t.pos<=0){t.pos=0;deliver(t,r.a,r.b);t.dir=1;}
+  }
+  draw();
+  requestAnimationFrame(loop);
+}
+function deliver(t,toTown,fromTown){
+  if(!t.loaded){t.loaded=true;t.cargo=towns[fromTown].good;return;}
+  // earn money for delivery
+  const r=routes[t.route];
+  const sz=(towns[toTown].size+towns[fromTown].size)/2;
+  const pay=Math.round(r.len*0.9*sz);
+  cash+=pay;
+  t.loaded=true;t.cargo=towns[fromTown].good;
+  updHud();
+}
+
+/* ---- draw ---- */
+function draw(){
+  if(!cv.width)return;
+  ctx.clearRect(0,0,cv.width,cv.height);
+  // subtle grid
+  ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;
+  for(let x=0;x<cv.width;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,cv.height);ctx.stroke();}
+  for(let y=0;y<cv.height;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(cv.width,y);ctx.stroke();}
+  // routes (roads)
+  routes.forEach(r=>{
+    const a=towns[r.a],b=towns[r.b];
+    ctx.strokeStyle='#5a5048';ctx.lineWidth=6;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(tx(a),ty(a));ctx.lineTo(tx(b),ty(b));ctx.stroke();
+    ctx.strokeStyle='rgba(232,196,104,.35)';ctx.lineWidth=1.5;ctx.setLineDash([6,8]);
+    ctx.beginPath();ctx.moveTo(tx(a),ty(a));ctx.lineTo(tx(b),ty(b));ctx.stroke();ctx.setLineDash([]);
+  });
+  // trucks
+  trucks.forEach(t=>{
+    const r=routes[t.route];if(!r)return;
+    const a=towns[r.a],b=towns[r.b];
+    const x=tx(a)+(tx(b)-tx(a))*t.pos, y=ty(a)+(ty(b)-ty(a))*t.pos;
+    ctx.fillStyle='#e8c468';ctx.beginPath();ctx.arc(x,y,6,0,7);ctx.fill();
+    ctx.fillStyle='#0a2018';ctx.font='8px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('🚚',x,y);
+  });
+  // towns
+  towns.forEach(t=>{
+    const x=tx(t),y=ty(t);const r=10+t.size*2.5;
+    if(t.id===selTown){ctx.beginPath();ctx.arc(x,y,r+6,0,7);ctx.fillStyle='rgba(232,196,104,.25)';ctx.fill();}
+    ctx.fillStyle='#1a2e26';ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fill();
+    ctx.fillStyle='#e8c468';ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.strokeStyle='#e8c468';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#e8c468';ctx.font='bold 11px Georgia';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('🏘',x,y);
+    ctx.fillStyle='#f3ead6';ctx.font='11px Georgia';ctx.fillText(t.name,x,y+r+11);
+    ctx.fillStyle='var(--gold-dim)';ctx.fillStyle='#b89640';ctx.font='9px Georgia';ctx.fillText(t.good,x,y+r+22);
+  });
+}
+
+/* ---- HUD / panel ---- */
+function updHud(){
+  $('cash').textContent=Math.round(cash);
+  $('trucks').textContent=trucks.length;
+  $('routes').textContent=routes.length;
+  const p=monthlyProfit();$('profit').textContent=(p>=0?'+':'')+p;
+  $('profit').style.color=p>=0?'#74d39a':'#e88';
+}
+function updPanel(){
+  const p=$('panel');
+  if(selTown!==null){
+    const t=towns[selTown];
+    p.innerHTML=`<div class="row"><b>${t.name}</b> <span style="color:var(--gold-dim)">producerer ${t.good} · størrelse ${t.size.toFixed(1)}</span></div>
+      <div class="row" style="font-size:13px;color:var(--gold-dim)">Tryk på en anden by for at bygge en rute hertil.</div>`;
+    return;
+  }
+  if(!routes.length){p.innerHTML=`<div class="row" style="color:var(--gold-dim);font-size:13px;">Du har 8000💰 til at starte. Byg din første rute mellem to byer, og køb en lastbil til at fragte varer. Tjen penge på hver levering.</div>`;return;}
+  // list routes with truck count + buy buttons
+  let html='';
+  routes.forEach((r,i)=>{
+    const a=towns[r.a].name,b=towns[r.b].name;
+    const n=trucks.filter(t=>t.route===i).length;
+    html+=`<div class="row"><span style="flex:1;">${a} → ${b} <span style="color:var(--gold-dim)">· ${n} 🚚</span></span>
+      <button class="btn" data-buy="${i}" style="flex:0 0 auto;">+🚚 ${TRUCK_COST}</button>
+      ${n>0?`<button class="btn" data-sell="${i}" style="flex:0 0 auto;">−</button>`:''}</div>`;
+  });
+  p.innerHTML=html;
+  p.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>buyTruck(+b.dataset.buy));
+  p.querySelectorAll('[data-sell]').forEach(b=>b.onclick=()=>sellTruck(+b.dataset.sell));
+}
+
+function lose(){
+  gameOver=true;clearInterval(monthTimer);
+  localStorage.removeItem('transport_save');
+  saveHigh('transport',month,false);
+  $('ovTitle').textContent='Konkurs!';
+  $('ovText').textContent=`Du løb tør for penge efter ${month} måneder. Bedste: byg ruter der tjener mere end de koster.`;
+  $('overlay').classList.add('show');
+}
+
+let toastT;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1800);}
+$('newBtn').onclick=()=>{localStorage.removeItem('transport_save');init(false);startClock();lastT=0;requestAnimationFrame(loop);};
+$('ovNew').onclick=()=>{localStorage.removeItem('transport_save');init(false);startClock();lastT=0;requestAnimationFrame(loop);};
+window.addEventListener('resize',resize);
+
+init(true);
+startClock();
+lastT=0;requestAnimationFrame(loop);
+</script>
+</body>
+</html>

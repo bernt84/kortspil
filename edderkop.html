@@ -93,10 +93,15 @@
 
 <script>
 const $=id=>document.getElementById(id);
+function saveHigh(key,value,lower){try{const hs=JSON.parse(localStorage.getItem('spil_highscores'))||{};const cur=hs[key];if(cur===undefined||(lower?value<cur:value>cur)){hs[key]=value;localStorage.setItem('spil_highscores',JSON.stringify(hs));}}catch(e){}}
+
 const SUITS=['♠','♥','♦','♣'];
 const RED=new Set(['♥','♦']);
 const RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 let suits=1, cols, stock, completed, moves, history, sel;
+
+function saveGame(){try{if(!cols)return;if(completed===8){localStorage.removeItem('edderkop_save');return;}localStorage.setItem('edderkop_save',JSON.stringify({suits,cols,stock,completed,moves}));}catch(e){}}
+function loadGame(){try{const s=JSON.parse(localStorage.getItem('edderkop_save'));if(!s||!s.cols)return false;suits=s.suits||1;cols=s.cols;stock=s.stock;completed=s.completed||0;moves=s.moves||0;history=[];sel=null;document.querySelectorAll('.diffs .btn').forEach(x=>x.classList.toggle('active',+x.dataset.suits===suits));render();return true;}catch(e){return false;}}
 
 function buildDeck(nSuits){
   // Spider uses 104 cards (2 decks). With nSuits, repeat suits accordingly.
@@ -108,6 +113,7 @@ function buildDeck(nSuits){
   return deck;
 }
 function deal(){
+  localStorage.removeItem('edderkop_save');
   const deck=buildDeck(suits);
   cols=Array.from({length:10},()=>[]);
   // 54 cards dealt: first 4 cols get 6, rest get 5; top card face up
@@ -211,9 +217,10 @@ function render(){
   // stock pips (5 deals)
   const deals=Math.floor(stock.length/10);
   $('stockRow').innerHTML=Array.from({length:deals},()=>'<div class="stock-pip"></div>').join('');
+  saveGame();
 }
 function checkWin(){
-  if(completed===8){$('ovText').textContent=`${moves} træk`;$('overlay').classList.add('show');}
+  if(completed===8){saveHigh('edderkop',moves,true);$('ovText').textContent=`${moves} træk`;$('overlay').classList.add('show');}
 }
 
 let toastT;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1600);}
@@ -227,7 +234,7 @@ $('newBtn').onclick=()=>{$('overlay').classList.remove('show');deal();};
 $('ovNew').onclick=()=>{$('overlay').classList.remove('show');deal();};
 window.addEventListener('resize',()=>{if(cols)render();});
 
-deal();
+if(!loadGame())deal();
 </script>
 </body>
 </html>
