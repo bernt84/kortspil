@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a3d2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Edderkop">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a3d2e'/%3E%3Ctext x='32' y='46' font-size='36' text-anchor='middle'%3E%F0%9F%95%B7%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<title>Edderkop</title>
+<style>
+  :root{
+    --felt:#0a3d2e; --felt-2:#0d4a37; --felt-line:#10573f;
+    --gold:#e8c468; --gold-dim:#b89640;
+    --cream:#f3ead6; --ink:#0a2018; --red:#c0392b;
+    --card-bg:#f7f2e6; --shadow:rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;}
+  html,body{margin:0;padding:0;}
+  body{font-family:"Georgia","Times New Roman",serif;background:radial-gradient(ellipse at 50% 0%, var(--felt-2), var(--felt) 75%);color:var(--cream);min-height:100vh;min-height:100dvh;padding:env(safe-area-inset-top) 6px 14px;overflow-x:hidden;}
+  .topbar{display:flex;align-items:center;gap:8px;max-width:760px;margin:0 auto;padding:10px 4px 6px;}
+  .topbar h1{flex:1;font-size:18px;margin:0;color:var(--gold);font-variant:small-caps;letter-spacing:1px;}
+  .topbar .stat{font-size:12px;color:var(--gold-dim);text-align:right;}
+  .btn{font-family:inherit;font-size:13px;border:1px solid var(--felt-line);border-radius:9px;padding:7px 9px;cursor:pointer;background:transparent;color:var(--gold);}
+  .btn.solid{background:var(--gold);color:var(--ink);border:none;font-weight:bold;box-shadow:0 2px 0 var(--gold-dim);}
+  .btn:active{transform:translateY(1px);}
+  a.btn{text-decoration:none;display:inline-block;}
+
+  .diffs{display:flex;gap:6px;max-width:760px;margin:4px auto 0;padding:0 4px;}
+  .diffs .btn{flex:1;text-align:center;font-size:12px;padding:8px 2px;}
+  .diffs .btn.active{background:var(--gold-dim);color:var(--ink);border-color:var(--gold-dim);}
+
+  .info{max-width:760px;margin:8px auto 0;display:flex;justify-content:space-between;align-items:center;padding:0 6px;font-size:12px;color:var(--gold-dim);}
+  .stock-row{display:flex;gap:3px;}
+  .stock-pip{width:14px;height:20px;border-radius:3px;background:repeating-linear-gradient(45deg,#1b6b52 0 4px,#15604a 4px 8px);border:1px solid #0c4634;}
+
+  .board{max-width:760px;margin:10px auto 0;display:grid;grid-template-columns:repeat(10,1fr);gap:var(--gap);padding:0 4px;}
+  :root{--gap:4px;--cr:5px;}
+  .col{position:relative;min-height:80px;}
+  .card{position:absolute;left:0;width:100%;aspect-ratio:5/7;border-radius:var(--cr);background:var(--card-bg);color:#1a1a1a;border:1px solid rgba(0,0,0,.25);box-shadow:0 1px 2px var(--shadow);display:flex;align-items:flex-start;justify-content:flex-start;padding:3px 4px;font-size:clamp(8px,2.4vw,13px);font-weight:bold;line-height:1;cursor:pointer;overflow:hidden;}
+  .card.red{color:var(--red);}
+  .card.down{background:repeating-linear-gradient(45deg,#1b6b52 0 5px,#15604a 5px 10px);border:1px solid #0c4634;color:transparent;}
+  .card.sel{outline:3px solid var(--gold);outline-offset:-1px;z-index:5;}
+  .card .mini{position:absolute;top:1px;right:3px;font-size:clamp(7px,2vw,11px);opacity:.85;}
+  .empty-col{border:1.5px dashed rgba(255,255,255,.16);border-radius:var(--cr);aspect-ratio:5/7;}
+
+  .controls{max-width:760px;margin:14px auto 0;display:flex;gap:8px;padding:0 6px;}
+  .controls .btn{flex:1;text-align:center;}
+  .hint-text{max-width:760px;margin:10px auto 0;font-size:12px;color:var(--gold-dim);text-align:center;padding:0 10px;}
+
+  .overlay{position:fixed;inset:0;background:rgba(5,25,18,.92);z-index:80;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;}
+  .overlay.show{display:flex;}
+  .overlay h2{font-size:30px;margin:0 0 8px;color:var(--gold);font-variant:small-caps;}
+  .overlay p{margin:0 0 18px;}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:rgba(7,40,30,.96);border:1px solid var(--gold-dim);color:var(--cream);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:.25s;z-index:70;pointer-events:none;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="btn" href="index.html">‹ Menu</a>
+  <h1>Edderkop</h1>
+  <div class="stat" id="score">0 træk</div>
+</div>
+
+<div class="diffs">
+  <button class="btn active" data-suits="1">1 farve (let)</button>
+  <button class="btn" data-suits="2">2 farver</button>
+  <button class="btn" data-suits="4">4 farver (svær)</button>
+</div>
+
+<div class="info">
+  <div>Færdige: <span id="done">0</span>/8</div>
+  <div class="stock-row" id="stockRow"></div>
+</div>
+
+<div class="board" id="board"></div>
+
+<div class="controls">
+  <button class="btn solid" id="dealBtn">Del kort ud</button>
+  <button class="btn" id="undoBtn">Fortryd</button>
+  <button class="btn" id="newBtn">Nyt spil</button>
+</div>
+<div class="hint-text">Tryk et kort for at vælge en faldende række i samme farve, tryk så hvor den skal hen. Saml A→K i samme farve for at fjerne den. Tryk "Del kort ud" når du sidder fast.</div>
+
+<div class="overlay" id="overlay">
+  <h2>Løst!</h2>
+  <p id="ovText"></p>
+  <button class="btn solid" id="ovNew" style="font-size:17px;padding:13px 22px;">Spil igen</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const SUITS=['♠','♥','♦','♣'];
+const RED=new Set(['♥','♦']);
+const RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+let suits=1, cols, stock, completed, moves, history, sel;
+
+function buildDeck(nSuits){
+  // Spider uses 104 cards (2 decks). With nSuits, repeat suits accordingly.
+  const useSuits=SUITS.slice(0,nSuits);
+  const deck=[];
+  const copies=104/(13*useSuits.length);
+  for(let cp=0;cp<copies;cp++)for(const s of useSuits)for(let r=0;r<13;r++)deck.push({suit:s,rank:r,up:false});
+  for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}
+  return deck;
+}
+function deal(){
+  const deck=buildDeck(suits);
+  cols=Array.from({length:10},()=>[]);
+  // 54 cards dealt: first 4 cols get 6, rest get 5; top card face up
+  for(let i=0;i<10;i++){const n=i<4?6:5;for(let k=0;k<n;k++)cols[i].push(deck.pop());}
+  cols.forEach(c=>{if(c.length)c[c.length-1].up=true;});
+  stock=deck; // 50 remaining = 5 deals of 10
+  completed=0;moves=0;history=[];sel=null;
+  render();
+}
+function snapshot(){history.push(JSON.stringify({cols,stock,completed,moves}));if(history.length>120)history.shift();}
+function undo(){if(!history.length){toast('Ingen træk');return;}const s=JSON.parse(history.pop());cols=s.cols;stock=s.stock;completed=s.completed;moves=s.moves;sel=null;render();}
+
+function isRed(c){return RED.has(c.suit);}
+
+/* a movable run: consecutive descending, same suit, all face up */
+function runFrom(col,idx){
+  const pile=cols[col];
+  if(!pile[idx]||!pile[idx].up)return null;
+  for(let i=idx;i<pile.length-1;i++){
+    if(pile[i].suit!==pile[i+1].suit)return null;
+    if(pile[i].rank!==pile[i+1].rank+1)return null;
+  }
+  return pile.slice(idx);
+}
+function canDrop(run,destCol){
+  const pile=cols[destCol];
+  if(!pile.length)return true;
+  const top=pile[pile.length-1];
+  return top.up && top.rank===run[0].rank+1; // any suit can stack by rank
+}
+
+function tapCard(col,idx){
+  if(sel){
+    moveTo(col);return;
+  }
+  const run=runFrom(col,idx);
+  if(!run)return;
+  sel={col,idx};render();
+}
+function tapCol(col){if(sel)moveTo(col);}
+function moveTo(destCol){
+  const run=cols[sel.col].slice(sel.idx);
+  if(sel.col===destCol||!canDrop(run,destCol)){sel=null;render();return;}
+  snapshot();
+  cols[sel.col].splice(sel.idx);
+  run.forEach(c=>cols[destCol].push(c));
+  // flip exposed
+  const src=cols[sel.col];if(src.length&&!src[src.length-1].up)src[src.length-1].up=true;
+  sel=null;moves++;
+  checkComplete(destCol);
+  render();checkWin();
+}
+function checkComplete(col){
+  const pile=cols[col];
+  if(pile.length<13)return;
+  const last13=pile.slice(-13);
+  if(!last13[0].up)return;
+  const suit=last13[0].suit;
+  for(let i=0;i<13;i++){if(last13[i].suit!==suit||last13[i].rank!==12-i||!last13[i].up)return;}
+  pile.splice(pile.length-13);completed++;
+  if(pile.length&&!pile[pile.length-1].up)pile[pile.length-1].up=true;
+  toast('Række fuldført! '+completed+'/8');
+}
+function dealMore(){
+  if(!stock.length){toast('Ikke flere kort');return;}
+  if(cols.some(c=>c.length===0)){toast('Fyld alle tomme kolonner først');return;}
+  snapshot();
+  for(let i=0;i<10;i++){const c=stock.pop();c.up=true;cols[i].push(c);}
+  // check completions after deal
+  for(let i=0;i<10;i++)checkComplete(i);
+  sel=null;render();checkWin();
+}
+
+function render(){
+  const colW=$('board').clientWidth/10;
+  const downOff=Math.max(5,colW*0.16),upOff=Math.max(13,colW*0.34);
+  const b=$('board');b.innerHTML='';
+  cols.forEach((pile,ci)=>{
+    const col=document.createElement('div');col.className='col';
+    if(!pile.length){
+      const e=document.createElement('div');e.className='empty-col';
+      col.appendChild(e);col.onclick=()=>tapCol(ci);col.style.minHeight=(colW*1.4)+'px';
+    }else{
+      let y=0;
+      pile.forEach((c,i)=>{
+        const el=document.createElement('div');
+        el.className='card'+(c.up?'':' down')+(isRed(c)?' red':'');
+        if(c.up)el.innerHTML=`${RANKS[c.rank]}${c.suit}<span class="mini">${c.suit}</span>`;
+        el.style.top=y+'px';
+        if(c.up){el.onclick=ev=>{ev.stopPropagation();tapCard(ci,i);};if(sel&&sel.col===ci&&i>=sel.idx)el.classList.add('sel');}
+        col.appendChild(el);
+        y+=c.up?upOff:downOff;
+      });
+      col.style.minHeight=(y+colW*1.4)+'px';
+      col.onclick=()=>tapCol(ci);
+    }
+    b.appendChild(col);
+  });
+  $('done').textContent=completed;
+  $('score').textContent=moves+' træk';
+  // stock pips (5 deals)
+  const deals=Math.floor(stock.length/10);
+  $('stockRow').innerHTML=Array.from({length:deals},()=>'<div class="stock-pip"></div>').join('');
+}
+function checkWin(){
+  if(completed===8){$('ovText').textContent=`${moves} træk`;$('overlay').classList.add('show');}
+}
+
+let toastT;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1600);}
+
+document.querySelectorAll('.diffs .btn').forEach(b=>{
+  b.onclick=()=>{document.querySelectorAll('.diffs .btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');suits=+b.dataset.suits;$('overlay').classList.remove('show');deal();};
+});
+$('dealBtn').onclick=dealMore;
+$('undoBtn').onclick=undo;
+$('newBtn').onclick=()=>{$('overlay').classList.remove('show');deal();};
+$('ovNew').onclick=()=>{$('overlay').classList.remove('show');deal();};
+window.addEventListener('resize',()=>{if(cols)render();});
+
+deal();
+</script>
+</body>
+</html>

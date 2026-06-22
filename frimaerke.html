@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a3d2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Frimærke">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a3d2e'/%3E%3Crect x='18' y='16' width='28' height='32' rx='3' fill='%23f7f2e6'/%3E%3Ctext x='32' y='40' font-size='20' text-anchor='middle' fill='%23c0392b'%3E%E2%99%A5%3C/text%3E%3C/svg%3E">
+<title>Frimærke</title>
+<style>
+  :root{
+    --felt:#0a3d2e; --felt-2:#0d4a37; --felt-line:#10573f;
+    --gold:#e8c468; --gold-dim:#b89640;
+    --cream:#f3ead6; --ink:#0a2018; --red:#c0392b;
+    --card-bg:#f7f2e6; --shadow:rgba(0,0,0,.45);
+    --cr:6px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;}
+  html,body{margin:0;padding:0;}
+  body{font-family:"Georgia","Times New Roman",serif;background:radial-gradient(ellipse at 50% 0%, var(--felt-2), var(--felt) 75%);color:var(--cream);min-height:100vh;min-height:100dvh;padding:env(safe-area-inset-top) 8px 14px;}
+  .topbar{display:flex;align-items:center;gap:10px;max-width:560px;margin:0 auto;padding:10px 2px 6px;}
+  .topbar h1{flex:1;font-size:18px;margin:0;color:var(--gold);font-variant:small-caps;letter-spacing:1px;}
+  .topbar .stat{font-size:12px;color:var(--gold-dim);text-align:right;}
+  .btn{font-family:inherit;font-size:13px;border:1px solid var(--felt-line);border-radius:9px;padding:7px 10px;cursor:pointer;background:transparent;color:var(--gold);}
+  .btn.solid{background:var(--gold);color:var(--ink);border:none;font-weight:bold;box-shadow:0 2px 0 var(--gold-dim);}
+  .btn:active{transform:translateY(1px);}
+  a.btn{text-decoration:none;display:inline-block;}
+
+  .top-row{display:grid;grid-template-columns:repeat(7,1fr);gap:var(--gap);max-width:560px;margin:8px auto 0;}
+  :root{--gap:5px;}
+  .tableau{display:grid;grid-template-columns:repeat(7,1fr);gap:var(--gap);max-width:560px;margin:14px auto 0;}
+  .slot{position:relative;}
+  .pile-empty{border:1.5px dashed rgba(255,255,255,.18);border-radius:var(--cr);aspect-ratio:5/7;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.25);font-size:20px;}
+  .card{position:absolute;left:0;width:100%;aspect-ratio:5/7;border-radius:var(--cr);background:var(--card-bg);color:#1a1a1a;border:1px solid rgba(0,0,0,.25);box-shadow:0 1px 2px var(--shadow);padding:5% 7%;cursor:pointer;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;}
+  .card.red{color:var(--red);}
+  .card.down{background:repeating-linear-gradient(45deg,#1b6b52 0 6px,#15604a 6px 12px);border:1px solid #0c4634;color:transparent;}
+  .card .corner{font-size:clamp(11px,3.6vw,17px);font-weight:bold;line-height:1;}
+  .card .corner.br{align-self:flex-end;transform:rotate(180deg);}
+  .card .pip{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:clamp(16px,6vw,30px);}
+  .card.sel{outline:3px solid var(--gold);outline-offset:-1px;z-index:5;}
+  .spacer{grid-column:span 1;}
+
+  .controls{max-width:560px;margin:14px auto 0;display:flex;gap:8px;}
+  .controls .btn{flex:1;text-align:center;}
+  .hint-text{max-width:560px;margin:10px auto 0;font-size:12px;color:var(--gold-dim);text-align:center;padding:0 10px;}
+
+  .overlay{position:fixed;inset:0;background:rgba(5,25,18,.92);z-index:80;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;}
+  .overlay.show{display:flex;}
+  .overlay h2{font-size:30px;margin:0 0 8px;color:var(--gold);font-variant:small-caps;}
+  .overlay p{margin:0 0 18px;}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:rgba(7,40,30,.96);border:1px solid var(--gold-dim);color:var(--cream);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:.25s;z-index:70;pointer-events:none;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="btn" href="index.html">‹ Menu</a>
+  <h1>Frimærke</h1>
+  <div class="stat" id="score">0 træk</div>
+</div>
+
+<div class="top-row">
+  <div class="slot" id="stock"></div>
+  <div class="slot" id="waste"></div>
+  <div class="spacer"></div>
+  <div class="slot" id="f0"></div>
+  <div class="slot" id="f1"></div>
+  <div class="slot" id="f2"></div>
+  <div class="slot" id="f3"></div>
+</div>
+
+<div class="tableau" id="tableau">
+  <div class="slot" id="t0"></div><div class="slot" id="t1"></div><div class="slot" id="t2"></div>
+  <div class="slot" id="t3"></div><div class="slot" id="t4"></div><div class="slot" id="t5"></div><div class="slot" id="t6"></div>
+</div>
+
+<div class="controls">
+  <button class="btn solid" id="newBtn">Nyt spil</button>
+  <button class="btn" id="undoBtn">Fortryd</button>
+  <button class="btn" id="autoBtn">Saml</button>
+</div>
+<div class="hint-text">Som kabale, men der vendes tre kort ad gangen fra bunken. Byg faldende i skiftende farve på bordet, og A→K i samme farve på es-bunkerne. Dobbelttryk sender til es-bunken.</div>
+
+<div class="overlay" id="overlay">
+  <h2>Frimærket gik op!</h2>
+  <p id="ovText"></p>
+  <button class="btn solid" id="ovNew" style="font-size:17px;padding:13px 22px;">Spil igen</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const SUITS=['♠','♥','♦','♣'];
+const RED=new Set(['♥','♦']);
+const RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+const DRAW=3;
+let state, history, moves, sel;
+
+function makeDeck(){const d=[];for(let s=0;s<4;s++)for(let r=0;r<13;r++)d.push({suit:SUITS[s],rank:r,up:false});for(let i=d.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]];}return d;}
+function deal(){
+  const deck=makeDeck();
+  state={stock:[],waste:[],foundations:[[],[],[],[]],tableau:[[],[],[],[],[],[],[]]};
+  for(let c=0;c<7;c++)for(let n=0;n<=c;n++){const card=deck.pop();card.up=(n===c);state.tableau[c].push(card);}
+  state.stock=deck;history=[];moves=0;sel=null;render();
+}
+function snapshot(){history.push(JSON.stringify(state));if(history.length>150)history.shift();}
+function undo(){if(!history.length){toast('Ingen træk');return;}state=JSON.parse(history.pop());sel=null;moves++;render();}
+function isRed(c){return RED.has(c.suit);}
+
+function cardEl(c){
+  const el=document.createElement('div');
+  el.className='card'+(c.up?'':' down')+(isRed(c)?' red':'');
+  if(c.up)el.innerHTML=`<div class="corner">${RANKS[c.rank]}<br>${c.suit}</div><div class="pip">${c.suit}</div><div class="corner br">${RANKS[c.rank]}<br>${c.suit}</div>`;
+  return el;
+}
+function getPile(ref){if(ref==='waste')return state.waste;if(ref[0]==='t')return state.tableau[+ref[1]];if(ref[0]==='f')return state.foundations[+ref[1]];return [];}
+
+function render(){
+  const colW=$('t0').clientWidth||48;
+  const downOff=Math.max(7,colW*0.18),upOff=Math.max(15,colW*0.32);
+  // stock
+  const stock=$('stock');stock.innerHTML='';
+  if(state.stock.length){const e=cardEl({suit:'♠',rank:0,up:false});e.style.position='relative';stock.appendChild(e);}
+  else stock.innerHTML='<div class="pile-empty">↻</div>';
+  stock.onclick=onStock;
+  // waste (show up to 3 fanned)
+  const waste=$('waste');waste.innerHTML='';
+  const show=state.waste.slice(-3);
+  show.forEach((c,i)=>{const e=cardEl(c);e.style.position='relative';e.style.marginTop=i?'-60%':'0';
+    if(i===show.length-1){e.onclick=ev=>{ev.stopPropagation();tapCard('waste',state.waste.length-1);};e.ondblclick=ev=>{ev.stopPropagation();autoF('waste',state.waste.length-1);};if(sel&&sel.from==='waste')e.classList.add('sel');}
+    waste.appendChild(e);});
+  if(!show.length)waste.innerHTML='<div class="pile-empty"></div>';
+  // foundations
+  for(let f=0;f<4;f++){const s=$('f'+f);s.innerHTML='';const pile=state.foundations[f];
+    if(pile.length){const e=cardEl(pile[pile.length-1]);e.style.position='relative';e.onclick=()=>tapF(f);if(sel&&sel.from==='f'+f)e.classList.add('sel');s.appendChild(e);}
+    else{s.innerHTML='<div class="pile-empty">'+SUITS[f]+'</div>';s.onclick=()=>tapF(f);}}
+  // tableau
+  for(let t=0;t<7;t++){const s=$('t'+t);s.innerHTML='';const pile=state.tableau[t];
+    if(!pile.length){const e=document.createElement('div');e.className='pile-empty';s.appendChild(e);s.onclick=()=>tapT(t,-1);s.style.minHeight=(colW*1.4)+'px';continue;}
+    let y=0;pile.forEach((c,i)=>{const e=cardEl(c);e.style.top=y+'px';
+      if(c.up){e.onclick=ev=>{ev.stopPropagation();tapCard('t'+t,i);};e.ondblclick=ev=>{ev.stopPropagation();if(i===pile.length-1)autoF('t'+t,i);};if(sel&&sel.from==='t'+t&&i>=sel.idx)e.classList.add('sel');}
+      s.appendChild(e);y+=c.up?upOff:downOff;});
+    s.style.minHeight=(y+colW*1.4)+'px';s.onclick=()=>tapT(t,pile.length-1);}
+  $('score').textContent=moves+' træk';
+}
+function onStock(){
+  snapshot();
+  if(!state.stock.length){if(!state.waste.length){history.pop();return;}state.stock=state.waste.reverse().map(c=>({...c,up:false}));state.waste=[];}
+  else for(let i=0;i<DRAW&&state.stock.length;i++){const c=state.stock.pop();c.up=true;state.waste.push(c);}
+  sel=null;moves++;render();
+}
+function tapCard(from,idx){
+  if(sel){const col=from[0]==='t'?+from[1]:null;if(col!==null){tapT(col,idx);return;}}
+  const c=getPile(from)[idx];if(!c||!c.up)return;
+  if(sel&&sel.from===from&&sel.idx===idx){sel=null;render();return;}
+  sel={from,idx};render();
+}
+function tapF(f){if(sel){toF(f);return;}const p=state.foundations[f];if(p.length){sel={from:'f'+f,idx:p.length-1};render();}}
+function tapT(t,idx){if(!sel){const p=state.tableau[t];if(p.length){const top=p.length-1;if(p[top].up){sel={from:'t'+t,idx:top};render();}}return;}toT(t);}
+function canT(m,d){if(!d.length)return m.rank===12;const top=d[d.length-1];return top.up&&isRed(top)!==isRed(m)&&top.rank===m.rank+1;}
+function canF(m,d,si){if(m.suit!==SUITS[si])return false;if(!d.length)return m.rank===0;return d[d.length-1].rank===m.rank-1;}
+function flip(from){if(from[0]==='t'){const p=state.tableau[+from[1]];if(p.length&&!p[p.length-1].up)p[p.length-1].up=true;}}
+function toT(t){const cards=getPile(sel.from).slice(sel.idx);if(!cards.length){sel=null;render();return;}if(canT(cards[0],state.tableau[t])){snapshot();getPile(sel.from).splice(sel.idx);cards.forEach(c=>state.tableau[t].push(c));flip(sel.from);sel=null;moves++;render();win();}else{sel=null;render();}}
+function toF(f){const cards=getPile(sel.from).slice(sel.idx);if(cards.length!==1){toast('Kun ét kort til es-bunken');sel=null;render();return;}if(canF(cards[0],state.foundations[f],f)){snapshot();getPile(sel.from).splice(sel.idx);state.foundations[f].push(cards[0]);flip(sel.from);sel=null;moves++;render();win();}else{sel=null;render();}}
+function autoF(from,idx){const pile=getPile(from);const c=pile[idx];if(!c||idx!==pile.length-1)return;for(let f=0;f<4;f++)if(canF(c,state.foundations[f],f)){snapshot();pile.pop();state.foundations[f].push(c);flip(from);sel=null;moves++;render();win();return;}}
+function autoCollect(){let moved=true,any=false;while(moved){moved=false;const src=[['waste',state.waste]];state.tableau.forEach((p,i)=>src.push(['t'+i,p]));for(const[ref,pile]of src){if(!pile.length)continue;const c=pile[pile.length-1];if(!c.up)continue;for(let f=0;f<4;f++)if(canF(c,state.foundations[f],f)){if(!any){snapshot();any=true;}pile.pop();state.foundations[f].push(c);flip(ref);moved=true;break;}if(moved)break;}}if(any){moves++;sel=null;render();win();}else toast('Ingen kort kan samles');}
+function win(){if(state.foundations.reduce((a,p)=>a+p.length,0)===52){$('ovText').textContent=moves+' træk';$('overlay').classList.add('show');}}
+
+let toastT;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1500);}
+$('newBtn').onclick=()=>{$('overlay').classList.remove('show');deal();};
+$('ovNew').onclick=()=>{$('overlay').classList.remove('show');deal();};
+$('undoBtn').onclick=undo;$('autoBtn').onclick=autoCollect;
+window.addEventListener('resize',()=>{if(state)render();});
+deal();
+</script>
+</body>
+</html>

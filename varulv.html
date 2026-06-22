@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a3d2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Varulv">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a3d2e'/%3E%3Ctext x='32' y='46' font-size='36' text-anchor='middle'%3E%F0%9F%90%BA%3C/text%3E%3C/svg%3E">
+<title>Varulv</title>
+<style>
+  :root{
+    --felt:#0a3d2e; --felt-2:#0d4a37; --felt-line:#10573f;
+    --gold:#e8c468; --gold-dim:#b89640;
+    --cream:#f3ead6; --ink:#0a2018; --red:#c0392b; --blue:#5a8fd0;
+    --shadow:rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;}
+  html,body{margin:0;padding:0;}
+  body{font-family:"Georgia","Times New Roman",serif;background:radial-gradient(ellipse at 50% 0%, var(--felt-2), var(--felt) 75%);color:var(--cream);min-height:100vh;min-height:100dvh;padding:env(safe-area-inset-top) 12px 16px;}
+  .wrap{max-width:520px;margin:0 auto;}
+  .topbar{display:flex;align-items:center;gap:10px;padding:10px 2px 6px;}
+  .topbar h1{flex:1;font-size:20px;margin:0;color:var(--gold);font-variant:small-caps;letter-spacing:1px;}
+  .btn{font-family:inherit;font-size:14px;border:1px solid var(--felt-line);border-radius:9px;padding:9px 12px;cursor:pointer;background:transparent;color:var(--gold);}
+  .btn.solid{background:var(--gold);color:var(--ink);border:none;font-weight:bold;box-shadow:0 2px 0 var(--gold-dim);}
+  .btn:active{transform:translateY(1px);}
+  .btn.block{width:100%;}.btn.big{font-size:19px;padding:15px;}
+  a.btn{text-decoration:none;display:inline-block;}
+
+  .panel{background:var(--felt-2);border:1px solid var(--felt-line);border-radius:14px;padding:16px;margin:12px 0;box-shadow:0 6px 18px var(--shadow);}
+  label{display:block;font-size:13px;letter-spacing:1px;color:var(--gold-dim);text-transform:uppercase;margin-bottom:8px;}
+  .stepperline{display:flex;align-items:center;justify-content:space-between;}
+  .stepper{display:flex;align-items:center;gap:12px;}
+  .stepper button{width:44px;height:44px;border-radius:10px;border:1px solid var(--felt-line);background:#093427;color:var(--gold);font-size:26px;cursor:pointer;font-family:inherit;}
+  .stepper .v{font-size:26px;min-width:36px;text-align:center;}
+
+  .roles-list{margin-top:6px;}
+  .role-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--felt-line);}
+  .role-row:last-child{border-bottom:none;}
+  .role-row .emoji{font-size:26px;width:32px;text-align:center;}
+  .role-row .info{flex:1;}
+  .role-row .rn{font-size:16px;}
+  .role-row .rd{font-size:12px;color:var(--gold-dim);line-height:1.3;}
+  .role-row .team{font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:20px;}
+  .team.by{background:rgba(90,143,208,.2);color:var(--blue);}
+  .team.ulv{background:rgba(192,57,43,.2);color:#e88;}
+  .team.neutral{background:rgba(232,196,104,.15);color:var(--gold);}
+  .role-row .cnt{display:flex;align-items:center;gap:8px;}
+  .role-row .cnt button{width:34px;height:34px;border-radius:8px;border:1px solid var(--felt-line);background:#093427;color:var(--gold);font-size:18px;cursor:pointer;font-family:inherit;}
+  .role-row .cnt .n{min-width:20px;text-align:center;font-size:18px;}
+  .role-row.locked .cnt{opacity:.5;}
+
+  .summary{text-align:center;font-size:14px;color:var(--gold-dim);margin:8px 0;}
+  .summary.bad{color:#e88;}
+
+  /* deal screen */
+  .deal-card{text-align:center;padding:30px 20px;}
+  .deal-card .pnum{font-size:13px;letter-spacing:2px;color:var(--gold-dim);text-transform:uppercase;}
+  .deal-card .big-emoji{font-size:90px;margin:14px 0;}
+  .deal-card .role-name{font-size:34px;color:var(--gold);font-variant:small-caps;}
+  .deal-card .role-team{font-size:13px;letter-spacing:2px;text-transform:uppercase;margin:6px 0 16px;}
+  .deal-card .role-desc{font-size:15px;line-height:1.55;color:var(--cream);max-width:380px;margin:0 auto 8px;}
+  .tap-reveal{padding:60px 20px;text-align:center;}
+  .tap-reveal .pass{font-size:22px;color:var(--gold);margin-bottom:8px;font-variant:small-caps;}
+  .tap-reveal .sub{font-size:14px;color:var(--gold-dim);}
+  .big-tap{margin-top:24px;}
+
+  .rules{font-size:14px;line-height:1.6;}
+  .rules h3{color:var(--gold);font-size:14px;letter-spacing:1px;text-transform:uppercase;margin:14px 0 6px;}
+  .hidden{display:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <a class="btn" href="index.html">‹ Menu</a>
+    <h1>Varulv</h1>
+  </div>
+
+  <!-- SETUP -->
+  <section id="setup">
+    <div class="panel">
+      <div class="stepperline">
+        <label style="margin:0;">Antal spillere</label>
+        <div class="stepper">
+          <button id="pMinus">−</button><span class="v" id="pCount">6</span><button id="pPlus">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <label>Roller i spillet</label>
+      <div class="summary" id="summary"></div>
+      <div class="roles-list" id="rolesList"></div>
+    </div>
+
+    <button class="btn block big solid" id="startBtn">Uddel roller</button>
+
+    <details class="panel"><summary style="cursor:pointer;color:var(--gold);font-variant:small-caps;letter-spacing:1px;font-size:16px;">▸ Sådan spilles Varulv</summary>
+      <div class="rules">
+        <p>En spilleder (uden for spillet) styrer dag og nat. Om natten "vågner" bestemte roller efter tur og handler i hemmelighed; om dagen diskuterer alle og stemmer én ud. Landsbyen vinder når alle ulve er væk; ulvene vinder når de er lige så mange som landsbyboerne.</p>
+        <h3>Sådan bruges appen</h3>
+        <p>Vælg antal spillere og roller, og tryk "Uddel roller". Send så telefonen rundt — hver spiller ser hemmeligt sin rolle og giver videre. Behold gerne en spilleder til at styre nætterne.</p>
+        <h3>Nattens rækkefølge (forslag)</h3>
+        <p>Amor (kun første nat) → Seer → Ulve → Heks. Spillederen kalder hver rolle frem efter tur.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- DEALING -->
+  <section id="dealing" class="hidden">
+    <div class="panel" id="dealPanel"></div>
+  </section>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+
+const ROLES=[
+  {key:'ulv',name:'Varulv',emoji:'🐺',team:'ulv',min:1,desc:'Om natten vælger ulvene sammen et offer at æde. Om dagen skjuler du dig blandt landsbyboerne.'},
+  {key:'landsby',name:'Landsbyboer',emoji:'🧑‍🌾',team:'by',min:0,desc:'Ingen særlig evne. Brug stemme og snak til at finde ulvene.'},
+  {key:'seer',name:'Seer',emoji:'🔮',team:'by',min:0,desc:'Hver nat må du pege på én spiller og få at vide af spillederen, om vedkommende er en ulv.'},
+  {key:'heks',name:'Heks',emoji:'🧪',team:'by',min:0,desc:'Du har to drikke: én der redder nattens offer, og én der dræber en spiller. Hver må kun bruges én gang i spillet.'},
+  {key:'jaeger',name:'Jæger',emoji:'🏹',team:'by',min:0,desc:'Når du dør, må du straks skyde og tage én anden spiller med dig.'},
+  {key:'amor',name:'Amor',emoji:'💘',team:'by',min:0,desc:'Første nat udpeger du to forelskede. Dør den ene, dør den anden af sorg.'},
+  {key:'pige',name:'Den lille pige',emoji:'👧',team:'by',min:0,desc:'Du må kigge lidt, mens ulvene er vågne — men bliver du opdaget, æder de dig.'},
+  {key:'tyv',name:'Tyven',emoji:'🦝',team:'neutral',min:0,desc:'Først i spillet bytter du din rolle med en af to skjulte kort.'},
+];
+
+let pCount=6;
+let counts={ulv:1,landsby:0,seer:1,heks:0,jaeger:0,amor:0,pige:0,tyv:0};
+
+function totalAssigned(){return Object.values(counts).reduce((a,b)=>a+b,0);}
+function villagersFill(){
+  // landsby auto-fills the remainder
+  const others=totalAssigned()-counts.landsby;
+  counts.landsby=Math.max(0,pCount-others);
+}
+function renderSetup(){
+  $('pCount').textContent=pCount;
+  villagersFill();
+  const list=$('rolesList');list.innerHTML='';
+  ROLES.forEach(r=>{
+    const row=document.createElement('div');row.className='role-row'+(r.key==='landsby'?' locked':'');
+    const teamLbl=r.team==='by'?'By':r.team==='ulv'?'Ulv':'Neutral';
+    row.innerHTML=`<span class="emoji">${r.emoji}</span>
+      <span class="info"><span class="rn">${r.name} <span class="team ${r.team}">${teamLbl}</span></span><span class="rd">${r.desc}</span></span>`;
+    const cnt=document.createElement('div');cnt.className='cnt';
+    if(r.key==='landsby'){
+      cnt.innerHTML=`<span class="n">${counts.landsby}</span>`;
+    }else{
+      const minus=document.createElement('button');minus.textContent='−';
+      const n=document.createElement('span');n.className='n';n.textContent=counts[r.key];
+      const plus=document.createElement('button');plus.textContent='+';
+      minus.onclick=()=>{if(counts[r.key]>(r.min||0)){counts[r.key]--;renderSetup();}};
+      plus.onclick=()=>{if(totalAssigned()<pCount||r.key==='ulv'){counts[r.key]++;renderSetup();}};
+      cnt.append(minus,n,plus);
+    }
+    row.appendChild(cnt);
+    list.appendChild(row);
+  });
+  const tot=totalAssigned();
+  const s=$('summary');
+  const ulve=counts.ulv;
+  if(tot!==pCount){s.className='summary bad';s.textContent=`${tot} roller fordelt — skal være ${pCount}.`;$('startBtn').disabled=true;}
+  else if(ulve<1){s.className='summary bad';s.textContent='Mindst én varulv kræves.';$('startBtn').disabled=true;}
+  else if(ulve*2>=pCount){s.className='summary bad';s.textContent='For mange ulve — de vinder med det samme.';$('startBtn').disabled=true;}
+  else{s.className='summary';s.textContent=`${pCount} spillere · ${ulve} ulv${ulve>1?'e':''} · ${pCount-ulve} på landsbyens side`;$('startBtn').disabled=false;}
+}
+$('pMinus').onclick=()=>{if(pCount>4){pCount--;renderSetup();}};
+$('pPlus').onclick=()=>{if(pCount<20){pCount++;renderSetup();}};
+
+/* ---- dealing ---- */
+let deck=[], dealIdx=0, revealed=false;
+function buildDeck(){
+  deck=[];
+  ROLES.forEach(r=>{for(let i=0;i<counts[r.key];i++)deck.push(r);});
+  // shuffle
+  for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}
+  dealIdx=0;revealed=false;
+}
+$('startBtn').onclick=()=>{
+  buildDeck();
+  $('setup').classList.add('hidden');$('dealing').classList.remove('hidden');
+  showPass();
+};
+function showPass(){
+  revealed=false;
+  const p=$('dealPanel');
+  p.className='panel';
+  p.innerHTML=`<div class="tap-reveal">
+    <div class="pass">Spiller ${dealIdx+1} af ${deck.length}</div>
+    <div class="sub">Giv telefonen til denne spiller.<br>Sørg for at ingen andre kigger med.</div>
+    <button class="btn solid big block big-tap" id="revealBtn">Vis min rolle</button>
+  </div>`;
+  $('revealBtn').onclick=showRole;
+}
+function showRole(){
+  const r=deck[dealIdx];
+  const teamLbl=r.team==='by'?'Landsbyens side':r.team==='ulv'?'Ulvenes side':'Neutral';
+  const teamColor=r.team==='ulv'?'#e88':r.team==='by'?'var(--blue)':'var(--gold)';
+  const p=$('dealPanel');
+  p.innerHTML=`<div class="deal-card">
+    <div class="pnum">Spiller ${dealIdx+1}</div>
+    <div class="big-emoji">${r.emoji}</div>
+    <div class="role-name">${r.name}</div>
+    <div class="role-team" style="color:${teamColor}">${teamLbl}</div>
+    <div class="role-desc">${r.desc}</div>
+    <button class="btn solid big block" id="nextBtn" style="margin-top:18px;">${dealIdx<deck.length-1?'Skjul og giv videre':'Færdig — start spillet'}</button>
+  </div>`;
+  $('nextBtn').onclick=()=>{
+    dealIdx++;
+    if(dealIdx<deck.length)showPass();
+    else finishDeal();
+  };
+}
+function finishDeal(){
+  const p=$('dealPanel');
+  p.innerHTML=`<div class="deal-card">
+    <div class="big-emoji">🌙</div>
+    <div class="role-name">Alle har en rolle</div>
+    <div class="role-desc" style="margin-top:10px;">Spillederen kan nu starte første nat. God fornøjelse!</div>
+    <button class="btn solid big block" id="againBtn" style="margin-top:20px;">Uddel igen</button>
+    <button class="btn block" id="backBtn" style="margin-top:10px;">Ret opsætning</button>
+  </div>`;
+  $('againBtn').onclick=()=>{buildDeck();showPass();};
+  $('backBtn').onclick=()=>{$('dealing').classList.add('hidden');$('setup').classList.remove('hidden');};
+}
+
+renderSetup();
+</script>
+</body>
+</html>

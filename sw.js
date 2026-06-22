@@ -1,11 +1,16 @@
 /* Spasser Vest — service worker */
-const CACHE = 'kortspil-v9';
+const CACHE = 'kortspil-v10';
 const ASSETS = [
   './',
   './index.html',
   './kabale.html',
+  './edderkop.html',
+  './frimaerke.html',
   './minestryger.html',
-  './sudoku.html'
+  './sudoku.html',
+  './tetris.html',
+  './yatzy.html',
+  './varulv.html'
 ];
 
 self.addEventListener('install', e => {
