@@ -1,8 +1,9 @@
 /* Spasser Vest — service worker */
-const CACHE = 'spasser-vest-v1';
+const CACHE = 'kortspil-v4';
 const ASSETS = [
   './',
-  './index.html'
+  './index.html',
+  './kabale.html'
 ];
 
 self.addEventListener('install', e => {
