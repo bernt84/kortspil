@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a3d2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FreeCell">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a3d2e'/%3E%3Crect x='18' y='16' width='28' height='32' rx='3' fill='%23f7f2e6'/%3E%3Ctext x='32' y='40' font-size='20' text-anchor='middle' fill='%231a1a1a'%3E%E2%99%A0%3C/text%3E%3C/svg%3E">
+<title>FreeCell</title>
+<style>
+  :root{--felt:#0a3d2e;--felt-2:#0d4a37;--felt-line:#10573f;--gold:#e8c468;--gold-dim:#b89640;--cream:#f3ead6;--ink:#0a2018;--red:#c0392b;--card-bg:#f7f2e6;--shadow:rgba(0,0,0,.45);--cr:6px;}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;}
+  html,body{margin:0;padding:0;}
+  body{font-family:"Georgia",serif;background:radial-gradient(ellipse at 50% 0%, var(--felt-2), var(--felt) 75%);color:var(--cream);min-height:100vh;min-height:100dvh;padding:env(safe-area-inset-top) 6px 14px;overflow-x:hidden;}
+  .topbar{display:flex;align-items:center;gap:8px;max-width:720px;margin:0 auto;padding:10px 4px 6px;}
+  .topbar h1{flex:1;font-size:18px;margin:0;color:var(--gold);font-variant:small-caps;letter-spacing:1px;}
+  .topbar .stat{font-size:12px;color:var(--gold-dim);}
+  .btn{font-family:inherit;font-size:13px;border:1px solid var(--felt-line);border-radius:9px;padding:7px 9px;cursor:pointer;background:transparent;color:var(--gold);}
+  .btn.solid{background:var(--gold);color:var(--ink);border:none;font-weight:bold;box-shadow:0 2px 0 var(--gold-dim);}
+  .btn:active{transform:translateY(1px);}
+  a.btn{text-decoration:none;display:inline-block;}
+  .top-row{display:grid;grid-template-columns:repeat(8,1fr);gap:var(--gap);max-width:720px;margin:8px auto 0;}
+  :root{--gap:5px;}
+  .tableau{display:grid;grid-template-columns:repeat(8,1fr);gap:var(--gap);max-width:720px;margin:14px auto 0;}
+  .slot{position:relative;}
+  .pile-empty{border:1.5px dashed rgba(255,255,255,.18);border-radius:var(--cr);aspect-ratio:5/7;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.25);font-size:16px;}
+  .card{position:absolute;left:0;width:100%;aspect-ratio:5/7;border-radius:var(--cr);background:var(--card-bg);color:#1a1a1a;border:1px solid rgba(0,0,0,.25);box-shadow:0 1px 2px var(--shadow);padding:4% 6%;cursor:pointer;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;}
+  .card.red{color:var(--red);}
+  .card .corner{font-size:clamp(9px,2.8vw,15px);font-weight:bold;line-height:1;}
+  .card .corner.br{align-self:flex-end;transform:rotate(180deg);}
+  .card .pip{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:clamp(13px,4.5vw,24px);}
+  .card.sel{outline:3px solid var(--gold);outline-offset:-1px;z-index:5;}
+  .controls{max-width:720px;margin:14px auto 0;display:flex;gap:8px;padding:0 4px;}
+  .controls .btn{flex:1;text-align:center;}
+  .hint-text{max-width:720px;margin:10px auto 0;font-size:12px;color:var(--gold-dim);text-align:center;padding:0 10px;}
+  .overlay{position:fixed;inset:0;background:rgba(5,25,18,.92);z-index:80;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;}
+  .overlay.show{display:flex;}
+  .overlay h2{font-size:30px;margin:0 0 8px;color:var(--gold);font-variant:small-caps;}
+  .overlay p{margin:0 0 18px;}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:rgba(7,40,30,.96);border:1px solid var(--gold-dim);color:var(--cream);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:.25s;z-index:70;pointer-events:none;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="btn" href="index.html">‹ Menu</a>
+  <h1>FreeCell</h1>
+  <div class="stat" id="score">0 træk</div>
+</div>
+
+<div class="top-row">
+  <div class="slot" id="free0"></div><div class="slot" id="free1"></div><div class="slot" id="free2"></div><div class="slot" id="free3"></div>
+  <div class="slot" id="f0"></div><div class="slot" id="f1"></div><div class="slot" id="f2"></div><div class="slot" id="f3"></div>
+</div>
+<div class="tableau" id="tableau">
+  <div class="slot" id="t0"></div><div class="slot" id="t1"></div><div class="slot" id="t2"></div><div class="slot" id="t3"></div>
+  <div class="slot" id="t4"></div><div class="slot" id="t5"></div><div class="slot" id="t6"></div><div class="slot" id="t7"></div>
+</div>
+<div class="controls">
+  <button class="btn solid" id="newBtn">Nyt spil</button>
+  <button class="btn" id="undoBtn">Fortryd</button>
+  <button class="btn" id="autoBtn">Saml</button>
+</div>
+<div class="hint-text">Byg faldende i skiftende farve. Fire frie celler øverst til venstre kan holde ét kort hver. Saml A→K i samme farve på es-bunkerne. Dobbelttryk sender til es-bunke eller fri celle.</div>
+
+<div class="overlay" id="overlay"><h2>Kabalen gik op!</h2><p id="ovText"></p><button class="btn solid" id="ovNew" style="font-size:17px;padding:13px 22px;">Spil igen</button></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const SUITS=['♠','♥','♦','♣'];const RED=new Set(['♥','♦']);const RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+let state,history,moves,sel;
+function makeDeck(){const d=[];for(let s=0;s<4;s++)for(let r=0;r<13;r++)d.push({suit:SUITS[s],rank:r});for(let i=d.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]];}return d;}
+function deal(){
+  const deck=makeDeck();
+  state={free:[null,null,null,null],foundations:[[],[],[],[]],tableau:[[],[],[],[],[],[],[],[]]};
+  let i=0;for(const c of deck){state.tableau[i%8].push(c);i++;}
+  history=[];moves=0;sel=null;render();
+}
+function snapshot(){history.push(JSON.stringify(state));if(history.length>200)history.shift();}
+function undo(){if(!history.length){toast('Ingen træk');return;}state=JSON.parse(history.pop());sel=null;render();}
+function isRed(c){return RED.has(c.suit);}
+function cardEl(c){const el=document.createElement('div');el.className='card'+(isRed(c)?' red':'');el.innerHTML=`<div class="corner">${RANKS[c.rank]}<br>${c.suit}</div><div class="pip">${c.suit}</div><div class="corner br">${RANKS[c.rank]}<br>${c.suit}</div>`;return el;}
+
+function maxMovable(){
+  // (free cells +1) * 2^(empty columns) — but for tap-move we move 1 at a time, so just allow supermoves to non-empty
+  const freeCount=state.free.filter(x=>!x).length;
+  const emptyCols=state.tableau.filter(t=>!t.length).length;
+  return (freeCount+1)*Math.pow(2,emptyCols);
+}
+function render(){
+  const colW=$('t0').clientWidth||48;const upOff=Math.max(15,colW*0.30);
+  // free cells
+  for(let i=0;i<4;i++){const s=$('free'+i);s.innerHTML='';const c=state.free[i];
+    if(c){const e=cardEl(c);e.style.position='relative';e.onclick=()=>tapFree(i);e.ondblclick=()=>autoCard('free',i,0);if(sel&&sel.from==='free'+i)e.classList.add('sel');s.appendChild(e);}
+    else{s.innerHTML='<div class="pile-empty">○</div>';s.onclick=()=>tapFree(i);}}
+  // foundations
+  for(let f=0;f<4;f++){const s=$('f'+f);s.innerHTML='';const pile=state.foundations[f];
+    if(pile.length){const e=cardEl(pile[pile.length-1]);e.style.position='relative';e.onclick=()=>tapF(f);s.appendChild(e);}
+    else{s.innerHTML='<div class="pile-empty">'+SUITS[f]+'</div>';s.onclick=()=>tapF(f);}}
+  // tableau
+  for(let t=0;t<8;t++){const s=$('t'+t);s.innerHTML='';const pile=state.tableau[t];
+    if(!pile.length){const e=document.createElement('div');e.className='pile-empty';s.appendChild(e);s.onclick=()=>tapT(t);s.style.minHeight=(colW*1.4)+'px';continue;}
+    let y=0;pile.forEach((c,i)=>{const e=cardEl(c);e.style.top=y+'px';e.onclick=ev=>{ev.stopPropagation();tapCard('t'+t,i);};e.ondblclick=ev=>{ev.stopPropagation();if(i===pile.length-1)autoCard('t'+t,t,i);};if(sel&&sel.from==='t'+t&&i>=sel.idx)e.classList.add('sel');s.appendChild(e);y+=upOff;});
+    s.style.minHeight=(y+colW*1.4)+'px';s.onclick=()=>tapT(t);}
+  $('score').textContent=moves+' træk';
+}
+function getRun(t,idx){
+  const pile=state.tableau[t];
+  for(let i=idx;i<pile.length-1;i++){if(isRed(pile[i])===isRed(pile[i+1]))return null;if(pile[i].rank!==pile[i+1].rank+1)return null;}
+  return pile.slice(idx);
+}
+function tapCard(from,idx){
+  if(sel){const t=from[0]==='t'?+from[1]:null;if(t!==null){tapT(t);return;}}
+  if(from[0]==='t'){const run=getRun(+from[1],idx);if(!run)return;if(sel&&sel.from===from&&sel.idx===idx){sel=null;render();return;}sel={from,idx};render();}
+}
+function tapFree(i){if(sel){moveToFree(i);return;}if(state.free[i]){sel={from:'free'+i,idx:0};render();}}
+function tapF(f){if(sel){moveToFound(f);return;}}
+function tapT(t){if(!sel){const pile=state.tableau[t];if(pile.length){sel={from:'t'+t,idx:pile.length-1};render();}return;}moveToTab(t);}
+function selectedCards(){if(sel.from[0]==='t')return state.tableau[+sel.from[1]].slice(sel.idx);if(sel.from.startsWith('free'))return [state.free[+sel.from[4]]];return[];}
+function removeSel(){if(sel.from[0]==='t')state.tableau[+sel.from[1]].splice(sel.idx);else if(sel.from.startsWith('free'))state.free[+sel.from[4]]=null;}
+function canTab(cards,t){const pile=state.tableau[t];if(!pile.length)return true;const top=pile[pile.length-1];return isRed(top)!==isRed(cards[0])&&top.rank===cards[0].rank+1;}
+function canFound(card,f){const pile=state.foundations[f];if(card.suit!==SUITS[f])return false;if(!pile.length)return card.rank===0;return pile[pile.length-1].rank===card.rank-1;}
+function moveToTab(t){const cards=selectedCards();if(!cards.length){sel=null;render();return;}
+  if(cards.length>maxMovable()&&state.tableau[t].length){toast(`Kan kun flytte ${maxMovable()} kort`);sel=null;render();return;}
+  if(canTab(cards,t)){snapshot();removeSel();cards.forEach(c=>state.tableau[t].push(c));sel=null;moves++;render();win();}else{sel=null;render();}}
+function moveToFree(i){const cards=selectedCards();if(cards.length!==1){toast('Kun ét kort til en fri celle');sel=null;render();return;}if(!state.free[i]){snapshot();removeSel();state.free[i]=cards[0];sel=null;moves++;render();}else{sel=null;render();}}
+function moveToFound(f){const cards=selectedCards();if(cards.length!==1){sel=null;render();return;}if(canFound(cards[0],f)){snapshot();removeSel();state.foundations[f].push(cards[0]);sel=null;moves++;render();win();}else{sel=null;render();}}
+function autoCard(from,ref,idx){
+  let card;if(from==='free')card=state.free[ref];else{const pile=state.tableau[ref];card=pile[pile.length-1];}
+  if(!card)return;
+  for(let f=0;f<4;f++)if(canFound(card,f)){snapshot();if(from==='free')state.free[ref]=null;else state.tableau[ref].pop();state.foundations[f].push(card);sel=null;moves++;render();win();return;}
+  // else to a free cell
+  if(from!=='free'){for(let i=0;i<4;i++)if(!state.free[i]){snapshot();state.tableau[ref].pop();state.free[i]=card;sel=null;moves++;render();return;}}
+}
+function autoCollect(){let moved=true,any=false;while(moved){moved=false;
+  const srcs=[];state.free.forEach((c,i)=>{if(c)srcs.push(['free',i,c]);});state.tableau.forEach((p,i)=>{if(p.length)srcs.push(['t',i,p[p.length-1]]);});
+  for(const[type,ref,card]of srcs){for(let f=0;f<4;f++)if(canFound(card,f)){if(!any){snapshot();any=true;}if(type==='free')state.free[ref]=null;else state.tableau[ref].pop();state.foundations[f].push(card);moved=true;break;}if(moved)break;}}
+  if(any){moves++;sel=null;render();win();}else toast('Ingen kort kan samles');}
+function win(){if(state.foundations.reduce((a,p)=>a+p.length,0)===52){$('ovText').textContent=moves+' træk';$('overlay').classList.add('show');}}
+let toastT;function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1600);}
+$('newBtn').onclick=()=>{$('overlay').classList.remove('show');deal();};$('ovNew').onclick=()=>{$('overlay').classList.remove('show');deal();};
+$('undoBtn').onclick=undo;$('autoBtn').onclick=autoCollect;
+window.addEventListener('resize',()=>{if(state)render();});
+deal();
+</script>
+</body>
+</html>

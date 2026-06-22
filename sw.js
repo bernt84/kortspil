@@ -1,11 +1,15 @@
 /* Spasser Vest — service worker */
-const CACHE = 'kortspil-v13';
+const CACHE = 'kortspil-v14';
 const ASSETS = [
   './',
   './index.html',
   './kabale.html',
   './edderkop.html',
   './frimaerke.html',
+  './freecell.html',
+  './pyramide.html',
+  './fyrre-og-tyve.html',
+  './krig.html',
   './minestryger.html',
   './sudoku.html',
   './tetris.html',

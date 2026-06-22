@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a3d2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Krig">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a3d2e'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle'%3E%E2%9A%94%EF%B8%8F%3C/text%3E%3C/svg%3E">
+<title>Krig</title>
+<style>
+  :root{--felt:#0a3d2e;--felt-2:#0d4a37;--felt-line:#10573f;--gold:#e8c468;--gold-dim:#b89640;--cream:#f3ead6;--ink:#0a2018;--red:#c0392b;--card-bg:#f7f2e6;--shadow:rgba(0,0,0,.45);--cr:10px;}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;}
+  html,body{margin:0;padding:0;}
+  body{font-family:"Georgia",serif;background:radial-gradient(ellipse at 50% 0%, var(--felt-2), var(--felt) 75%);color:var(--cream);min-height:100vh;min-height:100dvh;padding:env(safe-area-inset-top) 12px 16px;display:flex;flex-direction:column;}
+  .topbar{display:flex;align-items:center;gap:10px;max-width:460px;margin:0 auto;width:100%;padding:10px 2px 6px;}
+  .topbar h1{flex:1;font-size:20px;margin:0;color:var(--gold);font-variant:small-caps;letter-spacing:1px;}
+  .btn{font-family:inherit;font-size:14px;border:1px solid var(--felt-line);border-radius:9px;padding:8px 11px;cursor:pointer;background:transparent;color:var(--gold);}
+  .btn.solid{background:var(--gold);color:var(--ink);border:none;font-weight:bold;box-shadow:0 2px 0 var(--gold-dim);}
+  .btn:active{transform:translateY(1px);}
+  a.btn{text-decoration:none;display:inline-block;}
+  .arena{flex:1;max-width:460px;margin:0 auto;width:100%;display:flex;flex-direction:column;justify-content:center;gap:14px;}
+  .side{text-align:center;}
+  .side .who{font-size:13px;letter-spacing:2px;color:var(--gold-dim);text-transform:uppercase;}
+  .side .count{font-size:14px;color:var(--cream);margin-top:2px;}
+  .cardzone{display:flex;justify-content:center;gap:10px;align-items:center;min-height:130px;margin:6px 0;}
+  .pcard{width:88px;aspect-ratio:5/7;border-radius:var(--cr);display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:bold;position:relative;box-shadow:0 4px 10px var(--shadow);}
+  .pcard.back{background:repeating-linear-gradient(45deg,#1b6b52 0 8px,#15604a 8px 16px);border:1px solid #0c4634;}
+  .pcard.face{background:var(--card-bg);color:#1a1a1a;border:1px solid rgba(0,0,0,.25);}
+  .pcard.face.red{color:var(--red);}
+  .pcard.empty{border:1.5px dashed rgba(255,255,255,.2);}
+  .pcard .s{font-size:.6em;position:absolute;top:6px;left:8px;}
+  .pcard.flip{animation:flip .3s;}
+  @keyframes flip{0%{transform:rotateY(90deg)}100%{transform:rotateY(0)}}
+  .vs{font-size:18px;color:var(--gold);font-variant:small-caps;letter-spacing:2px;}
+  .msg{text-align:center;font-size:18px;color:var(--gold);min-height:26px;margin:8px 0;}
+  .warpile{font-size:11px;color:var(--gold-dim);text-align:center;min-height:16px;}
+  .controls{max-width:460px;margin:10px auto 0;width:100%;}
+  .overlay{position:fixed;inset:0;background:rgba(5,25,18,.92);z-index:80;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;}
+  .overlay.show{display:flex;}
+  .overlay h2{font-size:30px;margin:0 0 8px;color:var(--gold);font-variant:small-caps;}
+  .overlay p{margin:0 0 18px;}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="btn" href="index.html">‹ Menu</a>
+  <h1>Krig</h1>
+</div>
+<div class="arena">
+  <div class="side">
+    <div class="who">Computer</div>
+    <div class="count" id="aiCount">26 kort</div>
+  </div>
+  <div class="cardzone">
+    <div class="pcard back" id="aiCard"></div>
+    <span class="vs">mod</span>
+    <div class="pcard back" id="meCard"></div>
+  </div>
+  <div class="warpile" id="warPile"></div>
+  <div class="msg" id="msg">Tryk for at vende kort</div>
+  <div class="side">
+    <div class="who">Dig</div>
+    <div class="count" id="meCount">26 kort</div>
+  </div>
+</div>
+<div class="controls"><button class="btn solid" id="playBtn" style="width:100%;padding:15px;font-size:18px;">Vend kort</button></div>
+<div class="overlay" id="overlay"><h2 id="ovTitle"></h2><p id="ovText"></p><button class="btn solid" id="ovNew" style="font-size:17px;padding:13px 22px;">Spil igen</button></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const SUITS=['♠','♥','♦','♣'];const RED=new Set(['♥','♦']);const RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+let me,ai,busy;
+function makeDeck(){const d=[];for(let s=0;s<4;s++)for(let r=0;r<13;r++)d.push({suit:SUITS[s],rank:r});for(let i=d.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]];}return d;}
+function deal(){const d=makeDeck();me=d.slice(0,26);ai=d.slice(26);busy=false;$('overlay').classList.remove('show');$('warPile').textContent='';$('msg').textContent='Tryk for at vende kort';setCard('meCard',null);setCard('aiCard',null);updCounts();}
+function isRed(c){return RED.has(c.suit);}
+function val(c){return c.rank;} // A high? Traditional War: A high. rank 0=A..12=K -> make A highest:
+function rankWar(c){return c.rank===0?13:c.rank;} // A=13 highest
+function setCard(id,c){const el=$(id);if(!c){el.className='pcard '+(id==='aiCard'?'back':'back');el.innerHTML='';return;}el.className='pcard face flip'+(isRed(c)?' red':'');el.innerHTML=`<span class="s">${c.suit}</span>${RANKS[c.rank]}`;setTimeout(()=>el.classList.remove('flip'),300);}
+function updCounts(){$('meCount').textContent=me.length+' kort';$('aiCount').textContent=ai.length+' kort';}
+
+function play(){
+  if(busy)return;
+  if(!me.length||!ai.length)return end();
+  busy=true;
+  const pot=[];
+  battle(pot);
+}
+function battle(pot){
+  const mc=me.shift(),ac=ai.shift();
+  pot.push(mc,ac);
+  setCard('meCard',mc);setCard('aiCard',ac);updCounts();
+  if(rankWar(mc)>rankWar(ac)){
+    $('msg').textContent='Du vinder runden!';me.push(...shuffle(pot));finish();
+  }else if(rankWar(ac)>rankWar(mc)){
+    $('msg').textContent='Computeren vinder runden';ai.push(...shuffle(pot));finish();
+  }else{
+    $('msg').textContent='Krig! ⚔️';
+    $('warPile').textContent=`Pulje: ${pot.length} kort`;
+    // each plays 3 face down + 1 up (if enough cards)
+    if(me.length<2||ai.length<2){
+      // not enough for war -> whoever has cards wins; else fewer loses
+      if(me.length<2&&ai.length<2){return end();}
+      if(me.length<2){ai.push(...shuffle(pot));$('msg').textContent='Du kunne ikke føre krig';}
+      else{me.push(...shuffle(pot));$('msg').textContent='Computeren kunne ikke føre krig';}
+      finish();return;
+    }
+    setTimeout(()=>{
+      for(let k=0;k<3&&me.length>1&&ai.length>1;k++){pot.push(me.shift(),ai.shift());}
+      $('warPile').textContent=`Pulje: ${pot.length} kort`;updCounts();
+      battle(pot);
+    },700);
+  }
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function finish(){updCounts();$('warPile').textContent='';busy=false;if(!me.length||!ai.length)end();}
+function end(){
+  busy=true;
+  const win=me.length>ai.length;
+  $('ovTitle').textContent=win?'Du vandt krigen!':'Computeren vandt';
+  $('ovText').textContent=win?'Du har alle kortene.':'Du løb tør for kort.';
+  $('overlay').classList.add('show');
+}
+$('playBtn').onclick=play;
+document.querySelector('.cardzone').onclick=play;
+$('ovNew').onclick=deal;
+deal();
+</script>
+</body>
+</html>
