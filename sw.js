@@ -29,7 +29,10 @@ const ASSETS = [
 
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting())
+    caches.open(CACHE).then(c =>
+      // Cache files individually so one missing file doesn't break the whole install
+      Promise.allSettled(ASSETS.map(url => c.add(url)))
+    ).then(() => self.skipWaiting())
   );
 });
 
