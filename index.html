@@ -309,6 +309,14 @@
       </span>
       <span class="arrow">›</span>
     </a>
+    <a class="game-card" href="taarnforsvar.html" style="text-decoration:none;">
+      <span class="emoji">🏰</span>
+      <span class="gc-body">
+        <span class="gc-title">Tårnforsvar</span>
+        <span class="gc-desc">Byg tårne og stop bølgerne. Opgradér og overlev.</span>
+      </span>
+      <span class="arrow">›</span>
+    </a>
     <a class="game-card" href="skak.html" style="text-decoration:none;">
       <span class="emoji">♞</span>
       <span class="gc-body">
@@ -1154,15 +1162,17 @@ function plOpenEditor(i){
   $('pl-editor').classList.remove('hidden');
 }
 function plUpdatePreview(){
+  if(!plDraft)return;
   const pv=$('pl-ed-preview');
   if(plDraft.photo){pv.style.backgroundImage=`url('${plDraft.photo}')`;pv.style.backgroundSize='cover';pv.style.backgroundPosition='center';pv.textContent='';}
   else{pv.style.backgroundImage='';pv.textContent=plDraft.emoji||(plDraft.name||'?').charAt(0).toUpperCase();pv.style.color=plDraft.color||'var(--gold)';}
 }
-function plMarkEmoji(){document.querySelectorAll('#pl-ed-emojis button').forEach(b=>{b.style.outline=(b.dataset.em&&b.dataset.em===plDraft.emoji&&!plDraft.photo)?'2px solid var(--gold)':'none';});}
-function plMarkColor(){document.querySelectorAll('#pl-ed-colors button').forEach(b=>{b.style.borderColor=(b.dataset.col===plDraft.color)?'var(--cream)':'transparent';});}
-$('pl-ed-name').addEventListener('input',e=>{plDraft.name=e.target.value;if(!plDraft.emoji&&!plDraft.photo)plUpdatePreview();});
+function plMarkEmoji(){if(!plDraft)return;document.querySelectorAll('#pl-ed-emojis button').forEach(b=>{b.style.outline=(b.dataset.em&&b.dataset.em===plDraft.emoji&&!plDraft.photo)?'2px solid var(--gold)':'none';});}
+function plMarkColor(){if(!plDraft)return;document.querySelectorAll('#pl-ed-colors button').forEach(b=>{b.style.borderColor=(b.dataset.col===plDraft.color)?'var(--cream)':'transparent';});}
+$('pl-ed-name').addEventListener('input',e=>{if(!plDraft)return;plDraft.name=e.target.value;if(!plDraft.emoji&&!plDraft.photo)plUpdatePreview();});
 $('pl-ed-photo').onclick=()=>$('pl-ed-file').click();
 $('pl-ed-file').onchange=e=>{
+  if(!plDraft)return;
   const file=e.target.files[0];if(!file)return;
   const reader=new FileReader();
   reader.onload=ev=>{
@@ -1179,13 +1189,15 @@ $('pl-ed-file').onchange=e=>{
   };
   reader.readAsDataURL(file);
 };
-$('pl-ed-nophoto').onclick=()=>{plDraft.photo='';plUpdatePreview();};
+$('pl-ed-nophoto').onclick=()=>{if(!plDraft)return;plDraft.photo='';plUpdatePreview();};
 $('pl-ed-close').onclick=()=>$('pl-editor').classList.add('hidden');
 $('pl-ed-save').onclick=()=>{
+  if(!plDraft||plEditIdx<0)return;
   plDraft.name=$('pl-ed-name').value.trim()||plDraft.name;
   players[plEditIdx]=plDraft;savePlayers();plRender();$('pl-editor').classList.add('hidden');
 };
 $('pl-ed-delete').onclick=()=>{
+  if(plEditIdx<0)return;
   if(confirm('Slet denne spiller?')){players.splice(plEditIdx,1);savePlayers();plRender();$('pl-editor').classList.add('hidden');}
 };
 
