@@ -1,9 +1,11 @@
 /* Spasser Vest — service worker */
-const CACHE = 'kortspil-v6';
+const CACHE = 'kortspil-v7';
 const ASSETS = [
   './',
   './index.html',
-  './kabale.html'
+  './kabale.html',
+  './minestryger.html',
+  './sudoku.html'
 ];
 
 self.addEventListener('install', e => {
