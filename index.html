@@ -6,11 +6,11 @@
 <meta name="theme-color" content="#0a3d2e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Kortspil">
+<meta name="apple-mobile-web-app-title" content="Spil">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a3d2e'/%3E%3Ctext x='32' y='47' font-size='42' text-anchor='middle' fill='%23e8e2d2' font-family='Georgia,serif'%3E%E2%99%A0%3C/text%3E%3C/svg%3E">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='38' fill='%230a3d2e'/%3E%3Ctext x='90' y='128' font-size='110' text-anchor='middle' fill='%23e8e2d2' font-family='Georgia,serif'%3E%E2%99%A0%3C/text%3E%3C/svg%3E">
-<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Kortspil%22%2C%22short_name%22%3A%22Kortspil%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230a3d2e%22%2C%22theme_color%22%3A%22%230a3d2e%22%2C%22start_url%22%3A%22.%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D%2527http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%2527%2520viewBox%3D%25270%25200%2520180%2520180%2527%253E%253Crect%2520width%3D%2527180%2527%2520height%3D%2527180%2527%2520rx%3D%252738%2527%2520fill%3D%2527%25230a3d2e%2527%2F%253E%253Ctext%2520x%3D%252790%2527%2520y%3D%2527128%2527%2520font-size%3D%2527110%2527%2520text-anchor%3D%2527middle%2527%2520fill%3D%2527%2523e8e2d2%2527%2520font-family%3D%2527Georgia%2Cserif%2527%253E%25E2%2599%25A0%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22180x180%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
-<title>Kortspil</title>
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Spil%22%2C%22short_name%22%3A%22Spil%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230a3d2e%22%2C%22theme_color%22%3A%22%230a3d2e%22%2C%22start_url%22%3A%22.%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D%2527http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%2527%2520viewBox%3D%25270%25200%2520180%2520180%2527%253E%253Crect%2520width%3D%2527180%2527%2520height%3D%2527180%2527%2520rx%3D%252738%2527%2520fill%3D%2527%25230a3d2e%2527%2F%253E%253Ctext%2520x%3D%252790%2527%2520y%3D%2527128%2527%2520font-size%3D%2527110%2527%2520text-anchor%3D%2527middle%2527%2520fill%3D%2527%2523e8e2d2%2527%2520font-family%3D%2527Georgia%2Cserif%2527%253E%25E2%2599%25A0%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22180x180%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+<title>Spil</title>
 <style>
   :root{
     --felt:#0a3d2e; --felt-2:#0d4a37; --felt-line:#10573f;
@@ -146,7 +146,7 @@
 <div class="wrap">
   <header>
     <button class="home-btn hidden" id="homeBtn">‹ Menu</button>
-    <h1 id="appTitle">Kortspil</h1>
+    <h1 id="appTitle">Spil</h1>
     <div class="sub" id="appSub">Vælg et spil</div>
   </header>
 
@@ -502,7 +502,7 @@ function show(screen){
   $('enogtredive').classList.toggle('hidden',screen!=='enogtredive');
   $('rovhul').classList.toggle('hidden',screen!=='rovhul');
   $('homeBtn').classList.toggle('hidden',screen==='menu');
-  if(screen==='menu'){$('appTitle').textContent='Kortspil';$('appSub').textContent='Vælg et spil';}
+  if(screen==='menu'){$('appTitle').textContent='Spil';$('appSub').textContent='Vælg et spil';}
   if(screen==='spasser'){$('appTitle').textContent='Spasser Vest';$('appSub').textContent='Meld dine stik';svRender();}
   if(screen==='rummy'){$('appTitle').textContent='500 Rummy';$('appSub').textContent='Først til 500';rmRender();}
   if(screen==='enogtredive'){$('appTitle').textContent='31';$('appSub').textContent='Regler';}
@@ -790,7 +790,7 @@ $('rm-calc-close').onclick=()=>$('rm-calc').classList.add('hidden');
   closeBtn.onclick=()=>{bar.classList.add('hidden');try{localStorage.setItem('installDismissed','1');}catch(e){}};
   window.addEventListener('beforeinstallprompt',e=>{
     e.preventDefault();deferred=e;
-    txt.innerHTML='Læg <b>Kortspil</b> på hjemmeskærmen for hurtig adgang.';
+    txt.innerHTML='Læg <b>Spil</b> på hjemmeskærmen for hurtig adgang.';
     btn.style.display='inline-block';bar.classList.remove('hidden');
   });
   btn.onclick=async()=>{if(!deferred)return;deferred.prompt();await deferred.userChoice;deferred=null;bar.classList.add('hidden');};
