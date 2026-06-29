@@ -1,5 +1,5 @@
 /* Spasser Vest — service worker */
-const CACHE = 'kortspil-v26';
+const CACHE = 'kortspil-v27';
 const ASSETS = [
   './',
   './index.html',
